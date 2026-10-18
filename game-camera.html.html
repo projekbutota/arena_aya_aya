@@ -613,6 +613,20 @@
             }
         }
 
+        function tampilkanHasil() {
+    const current = daftarSoal[indexSoal];
+    const isA = (current.jawaban.toUpperCase() === 'A');
+
+    if (isA) {
+        // ... kode visual zona left ...
+        updateSkorGlobal('RED', 100); // <-- TAMBAHKAN INI (Jika Area A/Kiri Benar)
+    } else {
+        // ... kode visual zona right ...
+        updateSkorGlobal('BLUE', 100); // <-- TAMBAHKAN INI (Jika Area B/Kanan Benar)
+    }
+    // ...
+}
+
         window.onload = () => {
             initCamera();
             muatSoal();
@@ -621,3 +635,9 @@
     </script>
 </body>
 </html>
+
+function updateSkorGlobal(tim, poin) {
+    let key = (tim.toUpperCase() === 'RED' || tim.toUpperCase() === 'MERAH') ? 'aya_score_red' : 'aya_score_blue';
+    let skorSekarang = parseInt(localStorage.getItem(key)) || 0;
+    localStorage.setItem(key, skorSekarang + poin);
+}
