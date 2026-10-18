@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bohr Atom 3D Dual Constructor - Kids & Kimia Gemoy Edition</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Luckiest+Guy&family=Sniglet:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Sniglet', 'Fredoka', cursive;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #020617;
+            color: #fff;
+        }
+
+        .atom-canvas {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            border-radius: 20px;
+            cursor: grab;
+            touch-action: none;
+        }
+        .atom-canvas:active {
+            cursor: grabbing;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glow-red {
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.3);
+            border-color: #f43f5e;
+        }
+        .glow-blue {
+            box-shadow: 0 0 20px rgba(2, 132, 199, 0.3);
+            border-color: #38bdf8;
+        }
+
+        .btn-gemoy {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+            font-family: 'Luckiest Guy', cursive;
+        }
+        .btn-gemoy:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .drag-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden">
+
+    <!-- HEADER BAR BAR -->
+    <header class="h-[7vh] min-h-[45px] bg-slate-900/95 border-b border-slate-700/80 px-4 flex justify-between items-center z-30 shadow-lg">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">⚛️</span>
+            <h1 class="font-['Luckiest_Guy'] text-lg md:text-xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-amber-300">
+                BOHR ATOM 3D DUO CONSTRUCTOR
+            </h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="bg-slate-800/90 border-2 border-amber-400 px-4 py-1 rounded-2xl flex items-center gap-3">
+                <div class="text-rose-400 font-['Luckiest_Guy'] text-sm md:text-base">🔴 MERAH: <span id="score-red">0</span></div>
+                <div class="text-slate-500 font-bold">|</div>
+                <div class="text-sky-400 font-['Luckiest_Guy'] text-sm md:text-base">🔵 BIRU: <span id="score-blue">0</span></div>
+            </div>
+
+            <button onclick="toggleAudio()" id="btn-audio" class="btn-gemoy bg-slate-700 text-amber-300 border border-slate-500 px-3 py-1 rounded-xl text-xs">
+                🔊 SUARA
+            </button>
+            <button onclick="resetWholeGame()" class="btn-gemoy bg-rose-600 text-white border border-rose-300 px-3 py-1 rounded-xl text-xs flex items-center gap-1">
+                <i class="fas fa-rotate"></i> RESET
+            </button>
+        </div>
+    </header>
+
+    <!-- DUAL PLAYER STAGE 50:50 -->
+    <main class="flex-1 flex flex-col md:flex-row w-full h-[93vh] relative overflow-hidden bg-slate-950">
+        
+        <!-- ========================================== -->
+        <!-- SISI KIRI: TIM MERAH 🔴 -->
+        <!-- ========================================== -->
+        <section class="w-full md:w-1/2 h-1/2 md:h-full p-2 flex flex-col gap-2 border-b-4 md:border-b-0 md:border-r-4 border-rose-500/40 relative">
+            
+            <!-- RINGKASAN TARGET UNSUR (TANPA DESKRIPSI TEKS PANDUAN) -->
+            <div class="glass-panel glow-red rounded-xl px-3 py-1.5 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="bg-rose-600 text-white px-2.5 py-0.5 rounded-full text-xs font-['Luckiest_Guy']">
+                        🔴 MERAH <span id="tag-red-level" class="text-amber-300 ml-1">(1/5)</span>
+                    </span>
+                    <h3 class="text-amber-300 font-bold text-sm" id="red-title">Target: Atom Litium</h3>
+                </div>
+                <div class="text-sm font-mono font-bold text-cyan-300 bg-slate-900 px-3 py-0.5 rounded-lg border border-rose-500/40" id="red-target-formula">
+                    ⁷₃Li
+                </div>
+            </div>
+
+            <!-- AREA KANVAS 3D LUAS DAN LAPANG -->
+            <div class="flex-1 relative rounded-2xl overflow-hidden border-2 border-rose-500/30 bg-slate-900/50 flex flex-col">
+                <canvas id="canvas-red" class="atom-canvas"></canvas>
+                
+                <div class="absolute top-2 left-2 flex gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700 backdrop-blur-md">
+                    <button onclick="setCameraPreset('RED', 'ISO')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">3D Iso</button>
+                    <button onclick="setCameraPreset('RED', 'TOP')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Atas</button>
+                    <button onclick="setCameraPreset('RED', 'FRONT')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Depan</button>
+                </div>
+
+                <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 px-3 py-1 rounded-xl border border-slate-700/80 backdrop-blur-md flex items-center justify-between text-xs text-slate-300">
+                    <span><i class="fas fa-arrows-rotate text-amber-400"></i> Geser kanvas untuk rotasi 3D</span>
+                    <span id="red-particle-summary" class="font-bold text-cyan-300">Inti: 0p, 0n | e-: K0, L0, M0, N0</span>
+                </div>
+            </div>
+
+            <!-- PANEL KONTROL PARTIKEL & DRAG -->
+            <div class="glass-panel rounded-xl p-2 flex flex-col gap-1.5">
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <!-- Proton -->
+                    <div class="bg-rose-950/60 p-1.5 rounded-xl border border-rose-500/40 flex flex-col items-center">
+                        <span class="text-xs font-bold text-rose-300">Proton (p⁺)</span>
+                        <div class="flex items-center gap-1 my-1">
+                            <button onclick="adjustParticle('RED', 'p', -1)" class="w-7 h-7 rounded-lg bg-rose-800 text-white font-bold text-sm hover:bg-rose-700">-</button>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-600 to-amber-500 border-2 border-white flex items-center justify-center font-bold text-sm text-white shadow-md cursor-grab"
+                                 onpointerdown="startParticleDrag(event, 'RED', 'p')">
+                                <span id="count-red-p">0</span>
+                            </div>
+                            <button onclick="adjustParticle('RED', 'p', 1)" class="w-7 h-7 rounded-lg bg-rose-600 text-white font-bold text-sm hover:bg-rose-500">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Neutron -->
+                    <div class="bg-slate-800/60 p-1.5 rounded-xl border border-slate-500/40 flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-300">Neutron (n⁰)</span>
+                        <div class="flex items-center gap-1 my-1">
+                            <button onclick="adjustParticle('RED', 'n', -1)" class="w-7 h-7 rounded-lg bg-slate-700 text-white font-bold text-sm hover:bg-slate-600">-</button>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 border-2 border-white flex items-center justify-center font-bold text-sm text-slate-900 shadow-md cursor-grab"
+                                 onpointerdown="startParticleDrag(event, 'RED', 'n')">
+                                <span id="count-red-n">0</span>
+                            </div>
+                            <button onclick="adjustParticle('RED', 'n', 1)" class="w-7 h-7 rounded-lg bg-slate-500 text-white font-bold text-sm hover:bg-slate-400">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Electron Shell Selector -->
+                    <div class="bg-sky-950/60 p-1.5 rounded-xl border border-sky-500/40 flex flex-col items-center justify-center">
+                        <span class="text-xs font-bold text-cyan-300 mb-1">Tambah Elektron (e⁻)</span>
+                        <div class="flex items-center justify-center gap-1 flex-wrap">
+                            <button onclick="adjustShell('RED', 'K', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+K</button>
+                            <button onclick="adjustShell('RED', 'L', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+L</button>
+                            <button onclick="adjustShell('RED', 'M', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+M</button>
+                            <button onclick="adjustShell('RED', 'N', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+N</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="clearTeamAtom('RED')" class="btn-gemoy bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-500 px-3 py-1.5 rounded-xl text-xs flex-1">
+                        <i class="fas fa-trash"></i> Reset
+                    </button>
+                    <button onclick="verifyTeamModel('RED')" class="btn-gemoy bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-500 text-white border-2 border-white px-4 py-1.5 rounded-xl text-sm font-bold flex-[2]">
+                        <i class="fas fa-check-circle"></i> UJI MODEL ATOM 🔴
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- SISI KANAN: TIM BIRU 🔵 -->
+        <!-- ========================================== -->
+        <section class="w-full md:w-1/2 h-1/2 md:h-full p-2 flex flex-col gap-2 relative">
+            
+            <!-- RINGKASAN TARGET UNSUR (TANPA DESKRIPSI TEKS PANDUAN) -->
+            <div class="glass-panel glow-blue rounded-xl px-3 py-1.5 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="bg-sky-600 text-white px-2.5 py-0.5 rounded-full text-xs font-['Luckiest_Guy']">
+                        🔵 BIRU <span id="tag-blue-level" class="text-amber-300 ml-1">(1/5)</span>
+                    </span>
+                    <h3 class="text-amber-300 font-bold text-sm" id="blue-title">Target: Ion Magnesium</h3>
+                </div>
+                <div class="text-sm font-mono font-bold text-cyan-300 bg-slate-900 px-3 py-0.5 rounded-lg border border-sky-500/40" id="blue-target-formula">
+                    ²⁴₁₂Mg²⁺
+                </div>
+            </div>
+
+            <!-- AREA KANVAS 3D LUAS DAN LAPANG -->
+            <div class="flex-1 relative rounded-2xl overflow-hidden border-2 border-sky-500/30 bg-slate-900/50 flex flex-col">
+                <canvas id="canvas-blue" class="atom-canvas"></canvas>
+                
+                <div class="absolute top-2 left-2 flex gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700 backdrop-blur-md">
+                    <button onclick="setCameraPreset('BLUE', 'ISO')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">3D Iso</button>
+                    <button onclick="setCameraPreset('BLUE', 'TOP')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Atas</button>
+                    <button onclick="setCameraPreset('BLUE', 'FRONT')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Depan</button>
+                </div>
+
+                <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 px-3 py-1 rounded-xl border border-slate-700/80 backdrop-blur-md flex items-center justify-between text-xs text-slate-300">
+                    <span><i class="fas fa-arrows-rotate text-amber-400"></i> Geser kanvas untuk rotasi 3D</span>
+                    <span id="blue-particle-summary" class="font-bold text-cyan-300">Inti: 0p, 0n | e-: K0, L0, M0, N0</span>
+                </div>
+            </div>
+
+            <!-- PANEL KONTROL PARTIKEL & DRAG -->
+            <div class="glass-panel rounded-xl p-2 flex flex-col gap-1.5">
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <!-- Proton -->
+                    <div class="bg-rose-950/60 p-1.5 rounded-xl border border-rose-500/40 flex flex-col items-center">
+                        <span class="text-xs font-bold text-rose-300">Proton (p⁺)</span>
+                        <div class="flex items-center gap-1 my-1">
+                            <button onclick="adjustParticle('BLUE', 'p', -1)" class="w-7 h-7 rounded-lg bg-rose-800 text-white font-bold text-sm hover:bg-rose-700">-</button>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-600 to-amber-500 border-2 border-white flex items-center justify-center font-bold text-sm text-white shadow-md cursor-grab"
+                                 onpointerdown="startParticleDrag(event, 'BLUE', 'p')">
+                                <span id="count-blue-p">0</span>
+                            </div>
+                            <button onclick="adjustParticle('BLUE', 'p', 1)" class="w-7 h-7 rounded-lg bg-rose-600 text-white font-bold text-sm hover:bg-rose-500">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Neutron -->
+                    <div class="bg-slate-800/60 p-1.5 rounded-xl border border-slate-500/40 flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-300">Neutron (n⁰)</span>
+                        <div class="flex items-center gap-1 my-1">
+                            <button onclick="adjustParticle('BLUE', 'n', -1)" class="w-7 h-7 rounded-lg bg-slate-700 text-white font-bold text-sm hover:bg-slate-600">-</button>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 border-2 border-white flex items-center justify-center font-bold text-sm text-slate-900 shadow-md cursor-grab"
+                                 onpointerdown="startParticleDrag(event, 'BLUE', 'n')">
+                                <span id="count-blue-n">0</span>
+                            </div>
+                            <button onclick="adjustParticle('BLUE', 'n', 1)" class="w-7 h-7 rounded-lg bg-slate-500 text-white font-bold text-sm hover:bg-slate-400">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Electron Shell Selector -->
+                    <div class="bg-sky-950/60 p-1.5 rounded-xl border border-sky-500/40 flex flex-col items-center justify-center">
+                        <span class="text-xs font-bold text-cyan-300 mb-1">Tambah Elektron (e⁻)</span>
+                        <div class="flex items-center justify-center gap-1 flex-wrap">
+                            <button onclick="adjustShell('BLUE', 'K', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+K</button>
+                            <button onclick="adjustShell('BLUE', 'L', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+L</button>
+                            <button onclick="adjustShell('BLUE', 'M', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+M</button>
+                            <button onclick="adjustShell('BLUE', 'N', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+N</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="clearTeamAtom('BLUE')" class="btn-gemoy bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-500 px-3 py-1.5 rounded-xl text-xs flex-1">
+                        <i class="fas fa-trash"></i> Reset
+                    </button>
+                    <button onclick="verifyTeamModel('BLUE')" class="btn-gemoy bg-gradient-to-r from-sky-600 to-teal-400 hover:from-sky-500 text-white border-2 border-white px-4 py-1.5 rounded-xl text-sm font-bold flex-[2]">
+                        <i class="fas fa-check-circle"></i> UJI MODEL ATOM 🔵
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- EVALUATION MODAL -->
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-10"></canvas>
+        
+        <div class="glass-panel border-4 border-amber-400 rounded-3xl p-6 max-w-md w-full text-center relative z-20 shadow-2xl">
+            <div id="modal-avatar" class="w-20 h-20 mx-auto -mt-14 bg-amber-400 rounded-full border-4 border-white flex items-center justify-center text-4xl shadow-xl">
+                🥳
+            </div>
+
+            <h2 id="modal-title" class="font-['Luckiest_Guy'] text-2xl mt-2 text-amber-300">
+                Model Atom Benar!
+            </h2>
+
+            <p id="modal-subtitle" class="text-xs text-slate-300 font-bold mt-1">
+                Tim Merah Berhasil Merakit Atom Litium!
+            </p>
+
+            <div class="bg-slate-900/90 rounded-2xl p-3 my-3 border border-slate-700 text-left text-xs space-y-1" id="modal-checklist">
+            </div>
+
+            <button onclick="closeModal()" class="btn-gemoy bg-gradient-to-r from-amber-500 to-emerald-500 text-slate-950 border-2 border-white px-6 py-2 rounded-xl font-['Luckiest_Guy'] text-base w-full">
+                LANJUTKAN LAB ➔
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* ENGINE & GAME STATE */
+        let isAudioEnabled = true;
+        let audioCtx = null;
+
+        let scoreRed = 0, scoreBlue = 0;
+        let idxRed = 0, idxBlue = 0;
+
+        const scenariosRed = [
+            { title: "Kasus 1: Atom Litium (⁷₃Li)", formula: "⁷₃Li", target: { p: 3, n: 4, shells: { K: 2, L: 1, M: 0, N: 0 } }, explanation: "Litium: 3 Proton, 4 Neutron (7-3), 3 Elektron (K=2, L=1)." },
+            { title: "Kasus 2: Ion Natrium (²³₁₁Na⁺)", formula: "²³₁₁Na⁺", target: { p: 11, n: 12, shells: { K: 2, L: 8, M: 0, N: 0 } }, explanation: "Ion Na⁺: 11 Proton, 12 Neutron, 10 Elektron (K=2, L=8)." },
+            { title: "Kasus 3: Atom Karbon-14 (¹⁴₆C)", formula: "¹⁴₆C", target: { p: 6, n: 8, shells: { K: 2, L: 4, M: 0, N: 0 } }, explanation: "Karbon-14: 6 Proton, 8 Neutron, 6 Elektron (K=2, L=4)." },
+            { title: "Kasus 4: Ion Klorida (³⁵₁₇Cl⁻)", formula: "³⁵₁₇Cl⁻", target: { p: 17, n: 18, shells: { K: 2, L: 8, M: 8, N: 0 } }, explanation: "Ion Cl⁻: 17 Proton, 18 Neutron, 18 Elektron (K=2, L=8, M=8)." },
+            { title: "Kasus 5: Atom Kalsium (⁴⁰₂₀Ca)", formula: "⁴⁰₂₀Ca", target: { p: 20, n: 20, shells: { K: 2, L: 8, M: 8, N: 2 } }, explanation: "Kalsium: 20 Proton, 20 Neutron, 20 Elektron (K=2, L=8, M=8, N=2)." }
+        ];
+
+        const scenariosBlue = [
+            { title: "Kasus 1: Ion Magnesium (²⁴₁₂Mg²⁺)", formula: "²⁴₁₂Mg²⁺", target: { p: 12, n: 12, shells: { K: 2, L: 8, M: 0, N: 0 } }, explanation: "Ion Mg²⁺: 12 Proton, 12 Neutron, 10 Elektron (K=2, L=8)." },
+            { title: "Kasus 2: Atom Neon (²⁰₁₀Ne)", formula: "²⁰₁₀Ne", target: { p: 10, n: 10, shells: { K: 2, L: 8, M: 0, N: 0 } }, explanation: "Neon: 10 Proton, 10 Neutron, 10 Elektron (K=2, L=8)." },
+            { title: "Kasus 3: Ion Aluminium (²⁷₁₃Al³⁺)", formula: "²⁷₁₃Al³⁺", target: { p: 13, n: 14, shells: { K: 2, L: 8, M: 0, N: 0 } }, explanation: "Ion Al³⁺: 13 Proton, 14 Neutron, 10 Elektron (K=2, L=8)." },
+            { title: "Kasus 4: Atom Silikon (²⁸₁₄Si)", formula: "²⁸₁₄Si", target: { p: 14, n: 14, shells: { K: 2, L: 8, M: 4, N: 0 } }, explanation: "Silikon: 14 Proton, 14 Neutron, 14 Elektron (K=2, L=8, M=4)." },
+            { title: "Kasus 5: Atom Kalium (³⁹₁₉K)", formula: "³⁹₁₉K", target: { p: 19, n: 20, shells: { K: 2, L: 8, M: 8, N: 1 } }, explanation: "Kalium: 19 Proton, 20 Neutron, 19 Elektron (K=2, L=8, M=8, N=1)." }
+        ];
+
+        const stateRed = { p: 0, n: 0, shells: { K: 0, L: 0, M: 0, N: 0 }, pitch: 0.45, yaw: 0.6, isDraggingCanvas: false, lastMouseX: 0, lastMouseY: 0 };
+        const stateBlue = { p: 0, n: 0, shells: { K: 0, L: 0, M: 0, N: 0 }, pitch: 0.45, yaw: -0.6, isDraggingCanvas: false, lastMouseX: 0, lastMouseY: 0 };
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function toggleAudio() {
+            isAudioEnabled = !isAudioEnabled;
+            document.getElementById('btn-audio').innerText = isAudioEnabled ? '🔊 SUARA' : '🔇 MATI';
+        }
+
+        function playSound(type) {
+            if (!isAudioEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            if (type === 'pop') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.08);
+            } else if (type === 'success') {
+                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(f, now + (i * 0.08));
+                    gain.gain.setValueAtTime(0.3, now + (i * 0.08)); gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.08) + 0.25);
+                    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now + (i * 0.08)); osc.stop(now + (i * 0.08) + 0.25);
+                });
+            } else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, now);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.25);
+            }
+        }
+
+        /* 3D RENDERING CANVAS */
+        let canvasRed, ctxRed, canvasBlue, ctxBlue;
+        let animAngle = 0;
+
+        function setupCanvases() {
+            canvasRed = document.getElementById('canvas-red'); ctxRed = canvasRed.getContext('2d');
+            canvasBlue = document.getElementById('canvas-blue'); ctxBlue = canvasBlue.getContext('2d');
+
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+
+            bindCanvasRotation(canvasRed, stateRed);
+            bindCanvasRotation(canvasBlue, stateBlue);
+        }
+
+        function resizeCanvases() {
+            [canvasRed, canvasBlue].forEach(c => {
+                if (c && c.parentElement) {
+                    c.width = c.parentElement.clientWidth;
+                    c.height = c.parentElement.clientHeight;
+                }
+            });
+        }
+
+        function bindCanvasRotation(canvas, state) {
+            canvas.addEventListener('pointerdown', (e) => {
+                state.isDraggingCanvas = true;
+                state.lastMouseX = e.clientX; state.lastMouseY = e.clientY;
+            });
+
+            window.addEventListener('pointermove', (e) => {
+                if (!state.isDraggingCanvas) return;
+                const dx = e.clientX - state.lastMouseX;
+                const dy = e.clientY - state.lastMouseY;
+                state.yaw += dx * 0.01;
+                state.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, state.pitch + dy * 0.01));
+                state.lastMouseX = e.clientX; state.lastMouseY = e.clientY;
+            });
+
+            window.addEventListener('pointerup', () => { state.isDraggingCanvas = false; });
+        }
+
+        function setCameraPreset(team, type) {
+            const state = (team === 'RED') ? stateRed : stateBlue;
+            playSound('pop');
+            if (type === 'ISO') { state.pitch = 0.45; state.yaw = 0.6; }
+            if (type === 'TOP') { state.pitch = 1.45; state.yaw = 0; }
+            if (type === 'FRONT') { state.pitch = 0; state.yaw = 0; }
+        }
+
+        function project3D(x, y, z, pitch, yaw, cx, cy) {
+            let x1 = x * Math.cos(yaw) - z * Math.sin(yaw);
+            let z1 = z * Math.cos(yaw) + x * Math.sin(yaw);
+            let y2 = y * Math.cos(pitch) - z1 * Math.sin(pitch);
+            let z2 = z1 * Math.cos(pitch) + y * Math.sin(pitch);
+            const scale = 380 / (400 + z2);
+            return { x: cx + x1 * scale, y: cy + y2 * scale, scale: scale, zDepth: z2 };
+        }
+
+        function renderLoop() {
+            animAngle += 0.02;
+            renderAtomCanvas(ctxRed, canvasRed, stateRed);
+            renderAtomCanvas(ctxBlue, canvasBlue, stateBlue);
+            requestAnimationFrame(renderLoop);
+        }
+
+        function renderAtomCanvas(ctx, canvas, state) {
+            if (!ctx || !canvas) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const drawList = [];
+
+            // 1. Nukleus
+            const totalNucleons = state.p + state.n;
+            const nucleusRadius = Math.max(12, Math.min(38, Math.pow(totalNucleons, 0.4) * 8));
+
+            let pDrawn = 0;
+            for (let i = 0; i < totalNucleons; i++) {
+                const isProton = (pDrawn < state.p); pDrawn++;
+                const phi = Math.acos(1 - 2 * (i + 0.5) / totalNucleons);
+                const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+                const r = nucleusRadius * 0.75 * Math.sqrt((i + 1) / totalNucleons);
+                const nx = r * Math.sin(phi) * Math.cos(theta);
+                const ny = r * Math.sin(phi) * Math.sin(theta);
+                const nz = r * Math.cos(phi);
+                const proj = project3D(nx, ny, nz, state.pitch, state.yaw, cx, cy);
+
+                drawList.push({ type: 'NUCLEON', isProton, x: proj.x, y: proj.y, r: Math.max(3, 9 * proj.scale), zDepth: proj.zDepth });
+            }
+
+            // 2. Kulit & Elektron
+            const shellRadii = { K: 60, L: 100, M: 140, N: 180 };
+            const shellNames = ['K', 'L', 'M', 'N'];
+
+            shellNames.forEach((sName, sIdx) => {
+                const r = shellRadii[sName];
+                const count = state.shells[sName];
+
+                const ringPoints = [];
+                for (let a = 0; a <= Math.PI * 2; a += Math.PI / 18) {
+                    ringPoints.push(project3D(Math.cos(a) * r, 0, Math.sin(a) * r, state.pitch, state.yaw, cx, cy));
+                }
+
+                drawList.push({ type: 'ORBIT_RING', name: sName, points: ringPoints, hasElectrons: count > 0, zDepth: 0 });
+
+                for (let e = 0; e < count; e++) {
+                    const eAngle = animAngle * (1 + sIdx * 0.2) + (e * (Math.PI * 2 / count));
+                    const eProj = project3D(Math.cos(eAngle) * r, 0, Math.sin(eAngle) * r, state.pitch, state.yaw, cx, cy);
+                    drawList.push({ type: 'ELECTRON', x: eProj.x, y: eProj.y, r: Math.max(4, 7 * eProj.scale), zDepth: eProj.zDepth });
+                }
+            });
+
+            drawList.sort((a, b) => b.zDepth - a.zDepth);
+
+            drawList.forEach(item => {
+                if (item.type === 'ORBIT_RING') {
+                    ctx.beginPath();
+                    item.points.forEach((pt, idx) => { if (idx === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y); });
+                    ctx.closePath();
+                    ctx.lineWidth = item.hasElectrons ? 2.5 : 1.2;
+                    ctx.strokeStyle = item.hasElectrons ? 'rgba(56, 189, 248, 0.7)' : 'rgba(255, 255, 255, 0.18)';
+                    ctx.stroke();
+
+                    if (item.points.length > 0) {
+                        ctx.font = '10px "Luckiest Guy"'; ctx.fillStyle = 'rgba(148, 163, 184, 0.7)';
+                        ctx.fillText(`KULIT ${item.name}`, item.points[0].x + 8, item.points[0].y);
+                    }
+                } else if (item.type === 'NUCLEON') {
+                    ctx.beginPath(); ctx.arc(item.x, item.y, item.r, 0, Math.PI * 2);
+                    let grad = ctx.createRadialGradient(item.x - item.r * 0.3, item.y - item.r * 0.3, item.r * 0.2, item.x, item.y, item.r);
+                    if (item.isProton) { grad.addColorStop(0, '#fef08a'); grad.addColorStop(0.5, '#f43f5e'); grad.addColorStop(1, '#9f1239'); }
+                    else { grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.6, '#94a3b8'); grad.addColorStop(1, '#334155'); }
+                    ctx.fillStyle = grad; ctx.fill();
+                } else if (item.type === 'ELECTRON') {
+                    ctx.beginPath(); ctx.arc(item.x, item.y, item.r, 0, Math.PI * 2);
+                    let eGrad = ctx.createRadialGradient(item.x - item.r * 0.3, item.y - item.r * 0.3, item.r * 0.2, item.x, item.y, item.r);
+                    eGrad.addColorStop(0, '#ffffff'); eGrad.addColorStop(0.5, '#38bdf8'); eGrad.addColorStop(1, '#0284c7');
+                    ctx.fillStyle = eGrad; ctx.fill();
+                }
+            });
+        }
+
+        /* CONTROLS */
+        function adjustParticle(team, type, delta) {
+            const state = (team === 'RED') ? stateRed : stateBlue;
+            initAudio();
+            if (type === 'p') state.p = Math.max(0, state.p + delta);
+            if (type === 'n') state.n = Math.max(0, state.n + delta);
+            playSound('pop');
+            updateSummaryDisplays();
+        }
+
+        function adjustShell(team, shellName, delta) {
+            const state = (team === 'RED') ? stateRed : stateBlue;
+            initAudio();
+            const limits = { K: 2, L: 8, M: 18, N: 32 };
+            if (delta > 0 && state.shells[shellName] >= limits[shellName]) { playSound('wrong'); return; }
+            state.shells[shellName] = Math.max(0, state.shells[shellName] + delta);
+            playSound('pop');
+            updateSummaryDisplays();
+        }
+
+        function clearTeamAtom(team) {
+            const state = (team === 'RED') ? stateRed : stateBlue;
+            state.p = 0; state.n = 0; state.shells = { K: 0, L: 0, M: 0, N: 0 };
+            playSound('pop');
+            updateSummaryDisplays();
+        }
+
+        function updateSummaryDisplays() {
+            document.getElementById('count-red-p').innerText = stateRed.p;
+            document.getElementById('count-red-n').innerText = stateRed.n;
+            document.getElementById('red-particle-summary').innerText = `Inti: ${stateRed.p}p, ${stateRed.n}n | e-: K${stateRed.shells.K}, L${stateRed.shells.L}, M${stateRed.shells.M}, N${stateRed.shells.N}`;
+
+            document.getElementById('count-blue-p').innerText = stateBlue.p;
+            document.getElementById('count-blue-n').innerText = stateBlue.n;
+            document.getElementById('blue-particle-summary').innerText = `Inti: ${stateBlue.p}p, ${stateBlue.n}n | e-: K${stateBlue.shells.K}, L${stateBlue.shells.L}, M${stateBlue.shells.M}, N${stateBlue.shells.N}`;
+        }
+
+        /* DRAG PARTICLES */
+        let draggingGhost = null;
+
+        function startParticleDrag(e, team, particleType) {
+            e.preventDefault(); initAudio();
+            draggingGhost = document.createElement('div'); draggingGhost.className = 'drag-ghost';
+            if (particleType === 'p') { draggingGhost.style.background = 'radial-gradient(circle at 30% 30%, #fef08a, #f43f5e)'; draggingGhost.innerText = 'p⁺'; }
+            else { draggingGhost.style.background = 'radial-gradient(circle at 30% 30%, #ffffff, #94a3b8)'; draggingGhost.innerText = 'n⁰'; }
+            draggingGhost.style.left = `${e.clientX}px`; draggingGhost.style.top = `${e.clientY}px`;
+            document.body.appendChild(draggingGhost);
+
+            function onPointerMove(ev) {
+                if (draggingGhost) { draggingGhost.style.left = `${ev.clientX}px`; draggingGhost.style.top = `${ev.clientY}px`; }
+            }
+
+            function onPointerUp(ev) {
+                window.removeEventListener('pointermove', onPointerMove);
+                window.removeEventListener('pointerup', onPointerUp);
+                if (draggingGhost) { draggingGhost.remove(); draggingGhost = null; }
+
+                const targetCanvas = (team === 'RED') ? canvasRed : canvasBlue;
+                const rect = targetCanvas.getBoundingClientRect();
+
+                if (ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom) {
+                    const dx = ev.clientX - (rect.left + rect.width / 2);
+                    const dy = ev.clientY - (rect.top + rect.height / 2);
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 45) adjustParticle(team, particleType, 1);
+                    else if (dist >= 45 && dist < 85) adjustShell(team, 'K', 1);
+                    else if (dist >= 85 && dist < 125) adjustShell(team, 'L', 1);
+                    else if (dist >= 125 && dist < 165) adjustShell(team, 'M', 1);
+                    else if (dist >= 165) adjustShell(team, 'N', 1);
+                }
+            }
+
+            window.addEventListener('pointermove', onPointerMove);
+            window.addEventListener('pointerup', onPointerUp);
+        }
+
+        /* VERIFICATION */
+        function verifyTeamModel(team) {
+            initAudio();
+            const scenario = (team === 'RED') ? scenariosRed[idxRed] : scenariosBlue[idxBlue];
+            const state = (team === 'RED') ? stateRed : stateBlue;
+            const target = scenario.target;
+
+            let isProtonOK = (state.p === target.p);
+            let isNeutronOK = (state.n === target.n);
+            let isKOK = (state.shells.K === target.shells.K);
+            let isLOK = (state.shells.L === target.shells.L);
+            let isMOK = (state.shells.M === target.shells.M);
+            let isNOK = (state.shells.N === target.shells.N);
+
+            let isAllCorrect = isProtonOK && isNeutronOK && isKOK && isLOK && isMOK && isNOK;
+
+            const modal = document.getElementById('modal-overlay');
+            const avatar = document.getElementById('modal-avatar');
+            const title = document.getElementById('modal-title');
+            const subtitle = document.getElementById('modal-subtitle');
+            const checklist = document.getElementById('modal-checklist');
+
+            if (isAllCorrect) {
+                playSound('success');
+                if (team === 'RED') { scoreRed += 100; document.getElementById('score-red').innerText = scoreRed; }
+                else { scoreBlue += 100; document.getElementById('score-blue').innerText = scoreBlue; }
+
+                avatar.innerText = '🥳';
+                title.innerText = "MODEL ATOM TEPAT! 🌟";
+                title.className = "font-['Luckiest_Guy'] text-2xl mt-2 text-emerald-400";
+                subtitle.innerText = `Tim ${team === 'RED' ? 'Merah 🔴' : 'Biru 🔵'} Berhasil Merakit ${scenario.title}!`;
+
+                checklist.innerHTML = `
+                    <div class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Proton: ${state.p} (Tepat)</div>
+                    <div class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Neutron: ${state.n} (Tepat)</div>
+                    <div class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Elektron Kulit: K:${state.shells.K}, L:${state.shells.L}, M:${state.shells.M}, N:${state.shells.N} (Sesuai)</div>
+                `;
+
+                if (team === 'RED') idxRed = Math.min(scenariosRed.length - 1, idxRed + 1);
+                else idxBlue = Math.min(scenariosBlue.length - 1, idxBlue + 1);
+
+                loadScenarioData();
+            } else {
+                playSound('wrong');
+                avatar.innerText = '🤔';
+                title.innerText = "EITS, PERIKSA LAGI! 🔍";
+                title.className = "font-['Luckiest_Guy'] text-2xl mt-2 text-rose-400";
+                subtitle.innerText = `Tim ${team === 'RED' ? 'Merah 🔴' : 'Biru 🔵'} Perlu Perbaikan:`;
+
+                checklist.innerHTML = `
+                    <div class="${isProtonOK ? 'text-emerald-400' : 'text-rose-400'} font-bold">${isProtonOK ? '✓' : '✗'} Proton: ${state.p} / Target: ${target.p}</div>
+                    <div class="${isNeutronOK ? 'text-emerald-400' : 'text-rose-400'} font-bold">${isNeutronOK ? '✓' : '✗'} Neutron: ${state.n} / Target: ${target.n}</div>
+                    <div class="${(isKOK && isLOK && isMOK && isNOK) ? 'text-emerald-400' : 'text-rose-400'} font-bold">${(isKOK && isLOK && isMOK && isNOK) ? '✓' : '✗'} Elektron Kulit: (K:${state.shells.K}, L:${state.shells.L}, M:${state.shells.M}, N:${state.shells.N})</div>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+
+        function loadScenarioData() {
+            const scRed = scenariosRed[idxRed];
+            document.getElementById('tag-red-level').innerText = `(${idxRed + 1}/5)`;
+            document.getElementById('red-target-formula').innerText = scRed.formula;
+            document.getElementById('red-title').innerText = scRed.title;
+
+            const scBlue = scenariosBlue[idxBlue];
+            document.getElementById('tag-blue-level').innerText = `(${idxBlue + 1}/5)`;
+            document.getElementById('blue-target-formula').innerText = scBlue.formula;
+            document.getElementById('blue-title').innerText = scBlue.title;
+        }
+
+        function resetWholeGame() {
+            scoreRed = 0; scoreBlue = 0; idxRed = 0; idxBlue = 0;
+            document.getElementById('score-red').innerText = 0; document.getElementById('score-blue').innerText = 0;
+            clearTeamAtom('RED'); clearTeamAtom('BLUE');
+            loadScenarioData(); playSound('pop');
+        }
+
+        window.onload = () => {
+            setupCanvases();
+            loadScenarioData();
+            updateSummaryDisplays();
+            renderLoop();
+        };
+    </script>
+</body>
+</html>

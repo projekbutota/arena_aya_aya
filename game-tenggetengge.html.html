@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Game Tengge-Tengge 3D Perspective - Isian Singkat IFP</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Luckiest+Guy&family=Sniglet:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Sniglet', 'Fredoka', cursive, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #090d16;
+            color: #ffffff;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #0f172a;
+        }
+
+        #stageCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .ui-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px 20px;
+        }
+
+        .interactive {
+            pointer-events: auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 24px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-title {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.8rem;
+            color: #facc15;
+            text-shadow: 3px 3px 0 #000, 0 0 15px rgba(250, 204, 21, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .turn-pill {
+            background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            color: #0f172a;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.3rem;
+            border: 3px solid #facc15;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-ui-top {
+            padding: 8px 18px;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.05rem;
+            border-radius: 16px;
+            border: 2.5px solid #fff;
+            cursor: pointer;
+            color: white;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .btn-ui-top:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
+        .btn-reset { background: linear-gradient(180deg, #0284c7, #0369a1); }
+        .btn-sound { background: linear-gradient(180deg, #8b5cf6, #6d28d9); }
+
+        .middle-stage {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 100%;
+            padding-bottom: 10px;
+        }
+
+        .side-card {
+            width: 300px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 28px;
+            padding: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .side-card.active-turn {
+            border-color: #facc15;
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
+        }
+
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 6px;
+            border-bottom: 2px stroke rgba(255, 255, 255, 0.1);
+        }
+
+        .team-name {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .team-red { color: #f43f5e; }
+        .team-blue { color: #38bdf8; }
+
+        .team-score {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2rem;
+            color: #facc15;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .home-count-badge {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .center-action-area {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        .btn-giant-action {
+            padding: 16px 42px;
+            border-radius: 30px;
+            border: 5px solid #ffffff;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.8rem;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 3px 0 rgba(255,255,255,0.4);
+            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-shadow: 2px 2px 0 #000;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn-giant-action:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .timer-box {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(12px);
+            border: 3px solid #facc15;
+            padding: 8px 18px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            pointer-events: auto;
+        }
+
+        .timer-val {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.8rem;
+            color: #facc15;
+        }
+
+        .quiz-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .quiz-modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .quiz-card {
+            width: 90%;
+            max-width: 860px;
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 32px;
+            border: 6px solid #facc15;
+            padding: 24px 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .quiz-modal-overlay.show .quiz-card {
+            transform: scale(1);
+        }
+
+        .quiz-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quiz-team-badge {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.1rem;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 50px;
+        }
+
+        .story-title {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.4rem;
+            color: #0f172a;
+        }
+
+        .story-text {
+            background: #f1f5f9;
+            border-left: 5px solid #0284c7;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .question-prompt {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        /* Virtual Answer Display Box */
+        .answer-input-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0f172a;
+            color: #facc15;
+            border: 4px solid #38bdf8;
+            border-radius: 20px;
+            padding: 12px 20px;
+            font-size: 1.8rem;
+            font-family: 'Luckiest Guy', cursive;
+            letter-spacing: 1px;
+            min-height: 65px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        .cursor-blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .virtual-keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-key {
+            flex: 1;
+            min-width: 42px;
+            height: 48px;
+            background: #ffffff;
+            color: #0f172a;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.1s ease;
+        }
+
+        .btn-key:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #cbd5e1;
+            background: #e0f2fe;
+        }
+
+        .btn-key.btn-num {
+            background: #fef3c7;
+            border-color: #fde047;
+            box-shadow: 0 4px 0 #facc15;
+            color: #78350f;
+        }
+
+        .btn-key.btn-special {
+            background: #e0e7ff;
+            border-color: #c7d2fe;
+            box-shadow: 0 4px 0 #a5b4fc;
+        }
+
+        .btn-key.btn-space {
+            flex: 3;
+            background: #f1f5f9;
+        }
+
+        .btn-key.btn-del {
+            flex: 1.5;
+            background: #ffe4e6;
+            border-color: #fecdd3;
+            box-shadow: 0 4px 0 #fda4af;
+            color: #9f1239;
+        }
+
+        .btn-key.btn-submit {
+            flex: 2.5;
+            background: linear-gradient(180deg, #22c55e, #16a34a);
+            border-color: #86efac;
+            box-shadow: 0 4px 0 #15803d;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .win-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 13, 22, 0.92);
+            backdrop-filter: blur(16px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .win-modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .win-card {
+            background: #ffffff;
+            color: #0f172a;
+            padding: 40px 60px;
+            border-radius: 36px;
+            border: 8px solid #facc15;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .win-modal-overlay.show .win-card {
+            transform: scale(1);
+        }
+
+        .win-header {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2.2rem;
+            color: #eab308;
+            margin-bottom: 10px;
+        }
+
+        .win-team-title {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 #cbd5e1;
+        }
+
+        .btn-restart-game {
+            padding: 14px 36px;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.6rem;
+            background: linear-gradient(180deg, #22c55e, #16a34a);
+            color: white;
+            border: 4px solid #ffffff;
+            border-radius: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #15803d;
+        }
+
+        .btn-restart-game:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #15803d;
+        }
+
+        sub, sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+        }
+        sup { top: -0.5em; }
+        sub { bottom: -0.25em; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 3D Canvas Background & Hopscotch Grid Stage -->
+        <canvas id="stageCanvas"></canvas>
+
+        <!-- Glassmorphism Floating UI Layer -->
+        <div class="ui-layer">
+            <!-- Top Navigation Bar -->
+            <div class="top-bar interactive">
+                <div class="game-title">
+                    <i class="fa-solid fa-cubes-stacked"></i> TENGGE-TENGGE 3D KIMIA (IFP)
+                </div>
+                <div class="turn-pill" id="turn-pill">
+                    GILIRAN: TIM MERAH 👧🏽
+                </div>
+                <div class="header-btns">
+                    <button class="btn-ui-top btn-sound" onclick="toggleAudio()" id="btn-sound">
+                        <i class="fas fa-volume-high"></i> SUARA
+                    </button>
+                    <button class="btn-ui-top btn-reset" onclick="resetGame()">
+                        <i class="fas fa-rotate"></i> RESET
+                    </button>
+                </div>
+            </div>
+
+            <!-- Middle Side Cards -->
+            <div class="middle-stage">
+                <!-- Left Panel: Team Red -->
+                <div class="side-card active-turn interactive" id="panel-red">
+                    <div class="team-header">
+                        <div class="team-name team-red">👧🏽 TIM MERAH</div>
+                        <div class="team-score" id="score-red">0</div>
+                    </div>
+                    <div class="home-count-badge">RUMAH KOTAK: <span id="homes-red">0</span></div>
+                    <div style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600;">Soal Tersisa: <span id="q-rem-red">5</span> / 5</div>
+                </div>
+
+                <!-- Right Panel: Team Blue -->
+                <div class="side-card interactive" id="panel-blue">
+                    <div class="team-header">
+                        <div class="team-name team-blue">👧🏻 TIM BIRU</div>
+                        <div class="team-score" id="score-blue">0</div>
+                    </div>
+                    <div class="home-count-badge">RUMAH KOTAK: <span id="homes-blue">0</span></div>
+                    <div style="font-size: 0.85rem; color: #cbd5e1; font-weight: 600;">Soal Tersisa: <span id="q-rem-blue">5</span> / 5</div>
+                </div>
+            </div>
+
+            <!-- Giant Action Button -->
+            <div class="center-action-area">
+                <button class="btn-giant-action" id="btn-main-action" onclick="handleAction()">
+                    <i class="fa-solid fa-bullseye"></i> LEMPAR GACO & LOMPAT!
+                </button>
+            </div>
+
+            <!-- Timer Box -->
+            <div class="timer-box">
+                <i class="fa-solid fa-clock-rotate-left" style="color: #facc15; font-size: 1.4rem;"></i>
+                <div class="timer-val" id="timer-val">00:30</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-modal-overlay" id="quiz-modal">
+        <div class="quiz-card">
+            <div class="quiz-card-header">
+                <div class="story-title" id="q-modal-title">1. Baterai Kendaraan Listrik</div>
+                <div class="quiz-team-badge" id="q-team-badge" style="background: #f43f5e;">TIM MERAH</div>
+            </div>
+
+            <div class="story-text" id="q-modal-story">
+                Kendaraan listrik menggunakan baterai litium-ion untuk menyimpan energi...
+            </div>
+
+            <div class="question-prompt" id="q-modal-prompt">
+                Pertanyaan: Berapa jumlah neutron dalam atom litium tersebut?
+            </div>
+
+            <!-- Virtual Display Field for Input Buffer -->
+            <div class="answer-input-box">
+                <span id="input-buffer-text"></span><span class="cursor-blink">|</span>
+                <i class="fa-solid fa-keyboard" style="font-size: 1.2rem; opacity: 0.5;"></i>
+            </div>
+
+            <!-- IFP Touch Keyboard Layout -->
+            <div class="virtual-keyboard">
+                <!-- Numbers Row -->
+                <div class="kb-row">
+                    <button class="btn-key btn-num" onclick="pressKey('1')">1</button>
+                    <button class="btn-key btn-num" onclick="pressKey('2')">2</button>
+                    <button class="btn-key btn-num" onclick="pressKey('3')">3</button>
+                    <button class="btn-key btn-num" onclick="pressKey('4')">4</button>
+                    <button class="btn-key btn-num" onclick="pressKey('5')">5</button>
+                    <button class="btn-key btn-num" onclick="pressKey('6')">6</button>
+                    <button class="btn-key btn-num" onclick="pressKey('7')">7</button>
+                    <button class="btn-key btn-num" onclick="pressKey('8')">8</button>
+                    <button class="btn-key btn-num" onclick="pressKey('9')">9</button>
+                    <button class="btn-key btn-num" onclick="pressKey('0')">0</button>
+                    <button class="btn-key btn-special" onclick="pressKey(',')">,</button>
+                    <button class="btn-key btn-special" onclick="pressKey('+')">+</button>
+                    <button class="btn-key btn-special" onclick="pressKey('-')">-</button>
+                </div>
+
+                <!-- QWERTY Row 1 -->
+                <div class="kb-row">
+                    <button class="btn-key" onclick="pressKey('Q')">Q</button>
+                    <button class="btn-key" onclick="pressKey('W')">W</button>
+                    <button class="btn-key" onclick="pressKey('E')">E</button>
+                    <button class="btn-key" onclick="pressKey('R')">R</button>
+                    <button class="btn-key" onclick="pressKey('T')">T</button>
+                    <button class="btn-key" onclick="pressKey('Y')">Y</button>
+                    <button class="btn-key" onclick="pressKey('U')">U</button>
+                    <button class="btn-key" onclick="pressKey('I')">I</button>
+                    <button class="btn-key" onclick="pressKey('O')">O</button>
+                    <button class="btn-key" onclick="pressKey('P')">P</button>
+                </div>
+
+                <!-- QWERTY Row 2 -->
+                <div class="kb-row">
+                    <button class="btn-key" onclick="pressKey('A')">A</button>
+                    <button class="btn-key" onclick="pressKey('S')">S</button>
+                    <button class="btn-key" onclick="pressKey('D')">D</button>
+                    <button class="btn-key" onclick="pressKey('F')">F</button>
+                    <button class="btn-key" onclick="pressKey('G')">G</button>
+                    <button class="btn-key" onclick="pressKey('H')">H</button>
+                    <button class="btn-key" onclick="pressKey('J')">J</button>
+                    <button class="btn-key" onclick="pressKey('K')">K</button>
+                    <button class="btn-key" onclick="pressKey('L')">L</button>
+                </div>
+
+                <!-- QWERTY Row 3 -->
+                <div class="kb-row">
+                    <button class="btn-key" onclick="pressKey('Z')">Z</button>
+                    <button class="btn-key" onclick="pressKey('X')">X</button>
+                    <button class="btn-key" onclick="pressKey('C')">C</button>
+                    <button class="btn-key" onclick="pressKey('V')">V</button>
+                    <button class="btn-key" onclick="pressKey('B')">B</button>
+                    <button class="btn-key" onclick="pressKey('N')">N</button>
+                    <button class="btn-key" onclick="pressKey('M')">M</button>
+                </div>
+
+                <!-- Actions Row -->
+                <div class="kb-row">
+                    <button class="btn-key btn-space" onclick="pressKey(' ')">SPASI</button>
+                    <button class="btn-key btn-del" onclick="pressKey('DEL')"><i class="fa-solid fa-delete-left"></i> HAPUS</button>
+                    <button class="btn-key btn-submit" onclick="submitAnswer()"><i class="fa-solid fa-paper-plane"></i> KIRIM JAWABAN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Celebration Overlay -->
+    <div class="win-modal-overlay" id="win-modal">
+        <div class="win-card">
+            <div class="win-header">🏆 PERTANDINGAN SELESAI 🏆</div>
+            <div class="win-team-title" id="win-team-text">TIM MERAH MENANG!</div>
+            <button class="btn-restart-game" onclick="resetGame()">MAIN LAGI ➔</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('stageCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game State Variables
+        let currentTurn = 'RED'; // 'RED' or 'BLUE'
+        let scoreRed = 0;
+        let scoreBlue = 0;
+        let activeGacoBox = null;
+        let isAnimating = false;
+        let isGameOver = false;
+        let audioMuted = false;
+        let currentInputBuffer = "";
+
+        // Claimed Box Owners (1 to 8): null, 'RED', or 'BLUE'
+        let boxOwners = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null };
+
+        // 5 Specific Short Answer Questions for Team Red
+        const redQuestions = [
+            {
+                title: "1. Baterai Kendaraan Listrik",
+                story: "Kendaraan listrik menggunakan baterai litium-ion untuk menyimpan energi. Saat baterai bekerja, ion litium bergerak di antara elektroda. Atom litium memiliki nomor atom 3 dan nomor massa 7.",
+                prompt: "Pertanyaan: Berapa jumlah neutron dalam atom litium tersebut?",
+                accepted: ["4"]
+            },
+            {
+                title: "2. Pengolahan Air Bersih",
+                story: "Dalam pengolahan air, klorin dapat membentuk ion klorida setelah menerima satu elektron. Atom klorin memiliki nomor atom 17 dan nomor massa 35.",
+                prompt: "Pertanyaan: Berapa jumlah elektron pada ion klorida (Cl⁻)?",
+                accepted: ["18"]
+            },
+            {
+                title: "3. Lampu Reklame",
+                story: "Lampu reklame tertentu menggunakan gas neon yang menghasilkan cahaya ketika dialiri listrik. Atom neon memiliki nomor atom 10 dan konfigurasi elektron kulit 2, 8. Susunan ini membuat neon relatif tidak reaktif.",
+                prompt: "Pertanyaan: Apa nama kelompok unsur yang mencakup neon?",
+                accepted: ["gas mulia", "gas-mulia", "gasmulia"]
+            },
+            {
+                title: "4. Garam Dapur",
+                story: "Natrium dalam garam dapur terdapat sebagai ion Na⁺. Atom natrium netral memiliki 11 proton. Ion tersebut terbentuk setelah atom natrium melepaskan satu elektron.",
+                prompt: "Pertanyaan: Berapa muatan ion natrium?",
+                accepted: ["+1", "1+", "+", "1", "positif 1", "plus 1"]
+            },
+            {
+                title: "5. Sensor Asap",
+                story: "Beberapa detektor asap menggunakan bahan yang mengandung amerisium-241. Isotop amerisium tersebut memiliki nomor atom 95 dan nomor massa 241. Jumlah neutron dapat diketahui dari selisih nomor massa dan nomor atom.",
+                prompt: "Pertanyaan: Berapa jumlah neutron amerisium-241?",
+                accepted: ["146"]
+            }
+        ];
+
+        // 5 Specific Short Answer Questions for Team Blue
+        const blueQuestions = [
+            {
+                title: "1. Pembuatan Kerangka Pesawat",
+                story: "Magnesium digunakan sebagai bahan paduan logam ringan pada berbagai komponen. Salah satu atom magnesium memiliki notasi <sup>24</sup><sub>12</sub>Mg. Ketika membentuk ion, atom tersebut melepaskan dua elektron.",
+                prompt: "Pertanyaan: Berapa jumlah elektron ion Mg<sup>2+</sup>?",
+                accepted: ["10"]
+            },
+            {
+                title: "2. Penelitian Fosil Purba",
+                story: "Peneliti menggunakan karbon-14 untuk memperkirakan usia sisa makhluk hidup purba. Karbon-14 memiliki nomor atom 6 dan nomor massa 14. Notasi atomnya menunjukkan jumlah proton dan nomor massa.",
+                prompt: "Pertanyaan: Tuliskan nomor massa karbon-14 dalam bentuk angka!",
+                accepted: ["14"]
+            },
+            {
+                title: "3. Pupuk untuk Tanaman",
+                story: "Kalium merupakan unsur penting bagi pertumbuhan tanaman. Atom kalium memiliki nomor atom 19 dan nomor massa 39. Pada atom netral, jumlah proton sama dengan jumlah elektronnya.",
+                prompt: "Pertanyaan: Berapa jumlah proton atom kalium?",
+                accepted: ["19"]
+            },
+            {
+                title: "4. Chip Komputer",
+                story: "Silikon merupakan bahan utama banyak chip elektronik. Atom silikon netral memiliki nomor atom 14. Dalam model konfigurasi elektron berdasarkan kulit, elektron ditempatkan mulai dari kulit terdalam.",
+                prompt: "Pertanyaan: Tuliskan konfigurasi elektron kulit silikon!",
+                accepted: ["2, 8, 4", "2,8,4", "2 8 4"]
+            },
+            {
+                title: "5. Unsur dalam Produk Sehari-hari",
+                story: "Aluminium digunakan dalam kaleng minuman dan berbagai peralatan rumah tangga. Sebuah atom aluminium netral memiliki nomor atom 13 dan nomor massa 27. Jika atom tersebut kehilangan tiga elektron, terbentuk ion Al<sup>3+</sup>.",
+                prompt: "Pertanyaan: Berapa jumlah elektron ion aluminium tersebut?",
+                accepted: ["10"]
+            }
+        ];
+
+        let idxRedQ = 0;
+        let idxBlueQ = 0;
+
+        let timerInterval = null;
+        let timeLeft = 30;
+
+        let flyingStone = null;
+        let hoppingCharacter = null;
+        let dustParticles = [];
+
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            if (audioMuted) return;
+            initAudio();
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            if (type === 'tap') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.05);
+            }
+            else if (type === 'throw') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(650, now + 0.22);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.22);
+            }
+            else if (type === 'jump') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(280, now);
+                osc.frequency.exponentialRampToValueAtTime(520, now + 0.14);
+                gain.gain.setValueAtTime(0.35, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.14);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.14);
+            }
+            else if (type === 'land') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(160, now);
+                osc.frequency.exponentialRampToValueAtTime(60, now + 0.09);
+                gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.09);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.09);
+            }
+            else if (type === 'correct') {
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0.3, now + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.25);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.08); osc.stop(now + idx * 0.08 + 0.25);
+                });
+            }
+            else if (type === 'wrong') {
+                const osc1 = audioCtx.createOscillator(), osc2 = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc1.type = 'sawtooth'; osc2.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(160, now); osc2.frequency.setValueAtTime(168, now);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
+                osc1.start(now); osc2.start(now); osc1.stop(now + 0.35); osc2.stop(now + 0.35);
+            }
+            else if (type === 'win') {
+                [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                    gain.gain.setValueAtTime(0.4, now + idx * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.4);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.1); osc.stop(now + idx * 0.1 + 0.4);
+                });
+            }
+        }
+
+        function toggleAudio() {
+            audioMuted = !audioMuted;
+            document.getElementById('btn-sound').innerHTML = audioMuted ? 
+                '<i class="fas fa-volume-xmark"></i> BISU' : '<i class="fas fa-volume-high"></i> SUARA';
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function project3D(nx, ny) {
+            const horizY = canvas.height * 0.24;
+            const bottomY = canvas.height * 0.92;
+            const vanX = canvas.width / 2;
+
+            const screenY = horizY + ny * (bottomY - horizY);
+            const k = 0.22 + ny * 0.78; 
+            const screenX = vanX + nx * (canvas.width * 0.42) * k;
+
+            return { x: screenX, y: screenY, k: k };
+        }
+
+        function get3DBlockGeometry() {
+            const blocks = {
+                1: { nyStart: 0.82, nyEnd: 0.98, nxStart: -0.26, nxEnd: 0.26, col: '#f43f5e', sideCol: '#be123c', isDouble: false },
+                2: { nyStart: 0.67, nyEnd: 0.81, nxStart: -0.24, nxEnd: 0.24, col: '#22c55e', sideCol: '#15803d', isDouble: false },
+                3: { nyStart: 0.53, nyEnd: 0.66, nxStart: -0.22, nxEnd: 0.22, col: '#eab308', sideCol: '#ca8a04', isDouble: false },
+                4: { nyStart: 0.39, nyEnd: 0.52, nxStart: -0.66, nxEnd: -0.22, col: '#a855f7', sideCol: '#7e22ce', isDouble: true },
+                5: { nyStart: 0.39, nyEnd: 0.52, nxStart: 0.22, nxEnd: 0.66, col: '#f97316', sideCol: '#c2410c', isDouble: true },
+                6: { nyStart: 0.27, nyEnd: 0.38, nxStart: -0.20, nxEnd: 0.20, col: '#38bdf8', sideCol: '#0284c7', isDouble: false },
+                7: { nyStart: 0.16, nyEnd: 0.26, nxStart: -0.58, nxEnd: -0.20, col: '#ec4899', sideCol: '#be185d', isDouble: true },
+                8: { nyStart: 0.16, nyEnd: 0.26, nxStart: 0.20, nxEnd: 0.58, col: '#3b82f6', sideCol: '#1d4ed8', isDouble: true },
+                9: { nyStart: 0.07, nyEnd: 0.15, nxStart: -0.20, nxEnd: 0.20, col: '#06b6d4', sideCol: '#0e7490', isDouble: false }
+            };
+
+            const computed = {};
+            for (let id in blocks) {
+                const b = blocks[id];
+                const topLeft = project3D(b.nxStart, b.nyStart);
+                const topRight = project3D(b.nxEnd, b.nyStart);
+                const bottomRight = project3D(b.nxEnd, b.nyEnd);
+                const bottomLeft = project3D(b.nxStart, b.nyEnd);
+                const center = project3D((b.nxStart + b.nxEnd) / 2, (b.nyStart + b.nyEnd) / 2);
+
+                computed[id] = {
+                    ...b,
+                    tl: topLeft, tr: topRight, br: bottomRight, bl: bottomLeft,
+                    center: center
+                };
+            }
+            return computed;
+        }
+
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width;
+            const h = canvas.height;
+            const horizY = h * 0.24;
+
+            // Sky & School Backdrop
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, horizY);
+            skyGrad.addColorStop(0, '#0284c7'); skyGrad.addColorStop(1, '#bae6fd');
+            ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, w, horizY);
+
+            ctx.fillStyle = '#b91c1c'; ctx.fillRect(0, horizY - 35, w, 15);
+            ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, horizY - 20, w, 20);
+
+            ctx.fillStyle = '#38bdf8';
+            for (let x = 60; x < w - 60; x += 120) { ctx.fillRect(x, horizY - 18, 45, 12); }
+
+            // Courtyard Floor Grid
+            const floorGrad = ctx.createLinearGradient(0, horizY, 0, h);
+            floorGrad.addColorStop(0, '#475569'); floorGrad.addColorStop(1, '#1e293b');
+            ctx.fillStyle = floorGrad; ctx.fillRect(0, horizY, w, h - horizY);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)'; ctx.lineWidth = 2;
+            for (let nx = -2.5; nx <= 2.5; nx += 0.25) {
+                const pTop = project3D(nx, 0), pBot = project3D(nx, 1);
+                ctx.beginPath(); ctx.moveTo(pTop.x, pTop.y); ctx.lineTo(pBot.x, pBot.y); ctx.stroke();
+            }
+            for (let ny = 0; ny <= 1; ny += 0.1) {
+                const pLeft = project3D(-2.5, ny), pRight = project3D(2.5, ny);
+                ctx.beginPath(); ctx.moveTo(pLeft.x, pLeft.y); ctx.lineTo(pRight.x, pRight.y); ctx.stroke();
+            }
+
+            // Flags
+            ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.moveTo(w * 0.08, horizY - 60); ctx.lineTo(w * 0.08, horizY + 80); ctx.stroke();
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(w * 0.08, horizY - 58, 40, 16);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(w * 0.08, horizY - 42, 40, 16);
+
+            ctx.beginPath(); ctx.moveTo(w * 0.92, horizY - 60); ctx.lineTo(w * 0.92, horizY + 80); ctx.stroke();
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(w * 0.92 - 40, horizY - 58, 40, 16);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(w * 0.92 - 40, horizY - 42, 40, 16);
+
+            // 3D Tengge-Tengge Blocks
+            const blocks = get3DBlockGeometry();
+            for (let id = 9; id >= 1; id--) {
+                const b = blocks[id];
+                const depthH = 16 * b.center.k;
+
+                let topCol = b.col; let sideCol = b.sideCol;
+                if (boxOwners[id] === 'RED') { topCol = '#f43f5e'; sideCol = '#9f1239'; }
+                if (boxOwners[id] === 'BLUE') { topCol = '#0284c7'; sideCol = '#075985'; }
+
+                // Shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.35)';
+                ctx.beginPath();
+                ctx.moveTo(b.tl.x, b.tl.y + depthH); ctx.lineTo(b.tr.x, b.tr.y + depthH);
+                ctx.lineTo(b.br.x + 8, b.br.y + depthH + 6); ctx.lineTo(b.bl.x - 8, b.bl.y + depthH + 6);
+                ctx.closePath(); ctx.fill();
+
+                // Extrusion
+                ctx.fillStyle = sideCol;
+                ctx.beginPath();
+                ctx.moveTo(b.bl.x, b.bl.y); ctx.lineTo(b.br.x, b.br.y);
+                ctx.lineTo(b.br.x, b.br.y + depthH); ctx.lineTo(b.bl.x, b.bl.y + depthH);
+                ctx.closePath(); ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 2; ctx.stroke();
+
+                // Surface
+                ctx.fillStyle = topCol;
+                ctx.beginPath();
+                ctx.moveTo(b.tl.x, b.tl.y); ctx.lineTo(b.tr.x, b.tr.y);
+                ctx.lineTo(b.br.x, b.br.y); ctx.lineTo(b.bl.x, b.bl.y);
+                ctx.closePath(); ctx.fill();
+                ctx.strokeStyle = '#fef08a'; ctx.lineWidth = 4 * b.center.k; ctx.stroke();
+
+                // Labels
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `700 ${Math.round(28 * b.center.k)}px "Luckiest Guy"`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+
+                if (boxOwners[id]) {
+                    ctx.fillText(boxOwners[id] === 'RED' ? '⭐ MERAH' : '⭐ BIRU', b.center.x, b.center.y);
+                } else {
+                    ctx.fillText(id === 9 ? '👑 KUBAH' : id, b.center.x, b.center.y);
+                }
+            }
+
+            // Dust Particles
+            dustParticles.forEach((p, idx) => {
+                p.x += p.vx; p.y += p.vy; p.alpha -= 0.035;
+                if (p.alpha <= 0) dustParticles.splice(idx, 1);
+                ctx.fillStyle = `rgba(254, 240, 138, ${Math.max(0, p.alpha)})`;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.k, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Flying Stone
+            if (flyingStone) {
+                const curX = flyingStone.startX + (flyingStone.endX - flyingStone.startX) * flyingStone.p;
+                const curY = flyingStone.startY + (flyingStone.endY - flyingStone.startY) * flyingStone.p;
+                const arcY = Math.sin(flyingStone.p * Math.PI) * (140 * flyingStone.k);
+
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath(); ctx.ellipse(curX, curY + 6, 16 * flyingStone.k, 6 * flyingStone.k, 0, 0, Math.PI * 2); ctx.fill();
+
+                ctx.save();
+                ctx.translate(curX, curY - arcY); ctx.rotate(flyingStone.p * Math.PI * 4);
+                ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(0, 0, 16 * flyingStone.k, 0, Math.PI * 2); ctx.fill();
+                ctx.lineWidth = 3 * flyingStone.k; ctx.strokeStyle = '#000000'; ctx.stroke();
+                ctx.font = `${14 * flyingStone.k}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('🪨', 0, 0); ctx.restore();
+            } else if (activeGacoBox) {
+                const target = blocks[activeGacoBox].center;
+                ctx.fillStyle = '#facc15';
+                ctx.beginPath(); ctx.arc(target.x, target.y, 16 * target.k, 0, Math.PI * 2); ctx.fill();
+                ctx.lineWidth = 3 * target.k; ctx.strokeStyle = '#000000'; ctx.stroke();
+                ctx.font = `${14 * target.k}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('🪨', target.x, target.y);
+            }
+
+            // Hopping Character
+            if (hoppingCharacter) {
+                ctx.save();
+                ctx.translate(hoppingCharacter.x, hoppingCharacter.y - hoppingCharacter.arcY);
+                ctx.scale(1, hoppingCharacter.scaleY);
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.beginPath();
+                ctx.ellipse(0, hoppingCharacter.arcY + 12, 22 * hoppingCharacter.k, 8 * hoppingCharacter.k, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.font = `${Math.round(52 * hoppingCharacter.k)}px serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(hoppingCharacter.isDouble ? (currentTurn === 'RED' ? '🤸🏽' : '🤸🏻') : (currentTurn === 'RED' ? '👧🏽' : '👧🏻'), 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function createDust(x, y, k) {
+            for (let i = 0; i < 14; i++) {
+                dustParticles.push({
+                    x: x, y: y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.5) * 5,
+                    alpha: 1, size: Math.random() * 6 + 3, k: k
+                });
+            }
+        }
+
+        function handleAction() {
+            if (isAnimating || isGameOver) return;
+            initAudio();
+
+            let available = [];
+            for (let i = 1; i <= 8; i++) {
+                if (!boxOwners[i]) available.push(i);
+            }
+
+            if (available.length === 0 || (currentTurn === 'RED' && idxRedQ >= 5) || (currentTurn === 'BLUE' && idxBlueQ >= 5)) {
+                endGame();
+                return;
+            }
+
+            activeGacoBox = available[Math.floor(Math.random() * available.length)];
+            const blocks = get3DBlockGeometry();
+            const target = blocks[activeGacoBox].center;
+
+            isAnimating = true;
+            document.getElementById('btn-main-action').style.display = 'none';
+
+            const startX = currentTurn === 'RED' ? canvas.width * 0.15 : canvas.width * 0.85;
+            const startY = canvas.height * 0.85;
+
+            let startTime = performance.now();
+            playSound('throw');
+
+            function animStoneStep(now) {
+                let p = Math.min((now - startTime) / 600, 1);
+                flyingStone = { startX, startY, endX: target.x, endY: target.y, p: p, k: target.k };
+
+                if (p < 1) {
+                    requestAnimationFrame(animStoneStep);
+                } else {
+                    flyingStone = null;
+                    playSound('land');
+                    createDust(target.x, target.y, target.k);
+                    setTimeout(() => startHopping(currentTurn), 300);
+                }
+            }
+            requestAnimationFrame(animStoneStep);
+        }
+
+        function startHopping(team) {
+            const blocks = get3DBlockGeometry();
+
+            let fullPath = [
+                { x: blocks[1].center.x, y: blocks[1].center.y, k: blocks[1].center.k, isDouble: false, boxIdx: 1 },
+                { x: blocks[2].center.x, y: blocks[2].center.y, k: blocks[2].center.k, isDouble: false, boxIdx: 2 },
+                { x: blocks[3].center.x, y: blocks[3].center.y, k: blocks[3].center.k, isDouble: false, boxIdx: 3 },
+                { x: (blocks[4].center.x + blocks[5].center.x) / 2, y: blocks[4].center.y, k: blocks[4].center.k, isDouble: true, boxIdx: 4 },
+                { x: blocks[6].center.x, y: blocks[6].center.y, k: blocks[6].center.k, isDouble: false, boxIdx: 6 },
+                { x: (blocks[7].center.x + blocks[8].center.x) / 2, y: blocks[7].center.y, k: blocks[7].center.k, isDouble: true, boxIdx: 7 }
+            ];
+
+            let targetPath = [];
+            for (let p of fullPath) {
+                targetPath.push(p);
+                if (p.boxIdx === activeGacoBox || (p.isDouble && (activeGacoBox === p.boxIdx || activeGacoBox === p.boxIdx + 1))) {
+                    break;
+                }
+            }
+
+            let stepIdx = 0;
+
+            function doHop() {
+                if (stepIdx >= targetPath.length) {
+                    isAnimating = false;
+                    setTimeout(() => openQuizModal(team), 400);
+                    return;
+                }
+
+                let start = stepIdx === 0 ? { x: targetPath[0].x, y: canvas.height + 60, k: 1, isDouble: false } : targetPath[stepIdx - 1];
+                let end = targetPath[stepIdx];
+
+                let startTime = performance.now();
+                let duration = 380;
+                playSound('jump');
+
+                function animHopStep(now) {
+                    let t = Math.min((now - startTime) / duration, 1);
+                    let curX = start.x + (end.x - start.x) * t;
+                    let curY = start.y + (end.y - start.y) * t;
+                    let curK = start.k + (end.k - start.k) * t;
+                    let arcY = Math.sin(t * Math.PI) * (75 * curK);
+                    let scaleY = 1 + Math.sin(t * Math.PI) * 0.22;
+
+                    hoppingCharacter = { x: curX, y: curY, k: curK, arcY: arcY, scaleY: scaleY, isDouble: end.isDouble };
+
+                    if (t < 1) {
+                        requestAnimationFrame(animHopStep);
+                    } else {
+                        playSound('land');
+                        createDust(end.x, end.y, end.k);
+                        hoppingCharacter.arcY = 0;
+                        hoppingCharacter.scaleY = 0.85;
+
+                        setTimeout(() => {
+                            hoppingCharacter.scaleY = 1;
+                            stepIdx++;
+                            doHop();
+                        }, 110);
+                    }
+                }
+                requestAnimationFrame(animHopStep);
+            }
+
+            doHop();
+        }
+
+        function openQuizModal(team) {
+            currentInputBuffer = "";
+            document.getElementById('input-buffer-text').innerText = "";
+
+            const isRed = team === 'RED';
+            const qList = isRed ? redQuestions : blueQuestions;
+            const qIdx = isRed ? idxRedQ : idxBlueQ;
+            const qData = qList[qIdx];
+
+            document.getElementById('q-modal-title').innerHTML = qData.title;
+            document.getElementById('q-modal-story').innerHTML = qData.story;
+            document.getElementById('q-modal-prompt').innerHTML = qData.prompt;
+
+            const badge = document.getElementById('q-team-badge');
+            badge.innerText = isRed ? 'TIM MERAH' : 'TIM BIRU';
+            badge.style.background = isRed ? '#f43f5e' : '#0284c7';
+
+            document.getElementById('quiz-modal').classList.add('show');
+            startTimer();
+        }
+
+        function pressKey(char) {
+            playSound('tap');
+            if (char === 'DEL') {
+                currentInputBuffer = currentInputBuffer.slice(0, -1);
+            } else {
+                if (currentInputBuffer.length < 25) {
+                    currentInputBuffer += char;
+                }
+            }
+            document.getElementById('input-buffer-text').innerText = currentInputBuffer;
+        }
+
+        function normalizeStr(str) {
+            if (!str) return '';
+            return str.toString().trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        function checkAnswer(userStr, acceptedList) {
+            const normUser = normalizeStr(userStr);
+            const compactUser = normUser.replace(/[\s,]+/g, '');
+
+            return acceptedList.some(ans => {
+                const normAns = normalizeStr(ans);
+                const compactAns = normAns.replace(/[\s,]+/g, '');
+                return normUser === normAns || compactUser === compactAns;
+            });
+        }
+
+        function submitAnswer() {
+            stopTimer();
+            document.getElementById('quiz-modal').classList.remove('show');
+
+            const isRed = currentTurn === 'RED';
+            const qList = isRed ? redQuestions : blueQuestions;
+            const qIdx = isRed ? idxRedQ : idxBlueQ;
+            const qData = qList[qIdx];
+
+            const isCorrect = checkAnswer(currentInputBuffer, qData.accepted);
+
+            if (isCorrect) {
+                playSound('correct');
+                boxOwners[activeGacoBox] = currentTurn;
+                if (isRed) {
+                    scoreRed += 100;
+                    idxRedQ++;
+                    document.getElementById('score-red').innerText = scoreRed;
+                    document.getElementById('homes-red').innerText = countHomes('RED');
+                    document.getElementById('q-rem-red').innerText = 5 - idxRedQ;
+                } else {
+                    scoreBlue += 100;
+                    idxBlueQ++;
+                    document.getElementById('score-blue').innerText = scoreBlue;
+                    document.getElementById('homes-blue').innerText = countHomes('BLUE');
+                    document.getElementById('q-rem-blue').innerText = 5 - idxBlueQ;
+                }
+            } else {
+                playSound('wrong');
+                if (isRed) {
+                    idxRedQ++;
+                    document.getElementById('q-rem-red').innerText = 5 - idxRedQ;
+                } else {
+                    idxBlueQ++;
+                    document.getElementById('q-rem-blue').innerText = 5 - idxBlueQ;
+                }
+            }
+
+            hoppingCharacter = null;
+            activeGacoBox = null;
+
+            setTimeout(() => switchTurn(), 300);
+        }
+
+        function countHomes(team) {
+            let count = 0;
+            for (let i = 1; i <= 8; i++) {
+                if (boxOwners[i] === team) count++;
+            }
+            return count;
+        }
+
+        function startTimer() {
+            stopTimer();
+            timeLeft = 30;
+            document.getElementById('timer-val').innerText = `00:${timeLeft < 10 ? '0' : ''}${timeLeft}`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-val').innerText = `00:${timeLeft < 10 ? '0' : ''}${timeLeft}`;
+                if (timeLeft <= 0) {
+                    stopTimer();
+                    submitAnswer();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function switchTurn() {
+            if (idxRedQ >= 5 && idxBlueQ >= 5) {
+                endGame();
+                return;
+            }
+
+            // Alternate turn or pass if team finished 5 questions
+            if (currentTurn === 'RED') {
+                if (idxBlueQ < 5) currentTurn = 'BLUE';
+            } else {
+                if (idxRedQ < 5) currentTurn = 'RED';
+            }
+
+            document.getElementById('turn-pill').innerText = `GILIRAN: TIM ${currentTurn === 'RED' ? 'MERAH 👧🏽' : 'BIRU 👧🏻'}`;
+            document.getElementById('panel-red').classList.toggle('active-turn', currentTurn === 'RED');
+            document.getElementById('panel-blue').classList.toggle('active-turn', currentTurn === 'BLUE');
+
+            document.getElementById('btn-main-action').style.display = 'flex';
+        }
+
+        function endGame() {
+            isGameOver = true;
+            playSound('win');
+
+            const winModal = document.getElementById('win-modal');
+            const winText = document.getElementById('win-team-text');
+
+            if (scoreRed > scoreBlue) {
+                winText.innerText = "👧🏽 TIM MERAH MENANG!";
+                winText.style.color = "#f43f5e";
+            } else if (scoreBlue > scoreRed) {
+                winText.innerText = "👧🏻 TIM BIRU MENANG!";
+                winText.style.color = "#0284c7";
+            } else {
+                winText.innerText = "🤝 HASIL SERI!";
+                winText.style.color = "#eab308";
+            }
+
+            winModal.classList.add('show');
+        }
+
+        function resetGame() {
+            stopTimer();
+            scoreRed = 0; scoreBlue = 0;
+            idxRedQ = 0; idxBlueQ = 0;
+            currentTurn = 'RED';
+            activeGacoBox = null;
+            hoppingCharacter = null;
+            flyingStone = null;
+            isAnimating = false; isGameOver = false;
+
+            boxOwners = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null };
+
+            document.getElementById('score-red').innerText = '0';
+            document.getElementById('score-blue').innerText = '0';
+            document.getElementById('homes-red').innerText = '0';
+            document.getElementById('homes-blue').innerText = '0';
+            document.getElementById('q-rem-red').innerText = '5';
+            document.getElementById('q-rem-blue').innerText = '5';
+
+            document.getElementById('quiz-modal').classList.remove('show');
+            document.getElementById('win-modal').classList.remove('show');
+
+            switchTurn();
+        }
+
+        function gameLoop() {
+            drawScene();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.onload = () => {
+            resizeCanvas();
+            window.onresize = resizeCanvas;
+            resetGame();
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
+</body>
+</html>

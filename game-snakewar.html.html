@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Game Snake Duo Battle IFP - Kids & Kimia Edition</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Luckiest+Guy&family=Sniglet:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sniglet', 'Fredoka', cursive; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+        body, html { width: 100vw; height: 100vh; overflow: hidden; background: #0f172a; color: #fff; }
+
+        #game-app {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+            overflow: hidden;
+        }
+
+        /* Header Bar */
+        .header-bar {
+            height: 10vh;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 4px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            z-index: 10;
+        }
+
+        .team-badge {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            padding: 5px 20px;
+            border-radius: 20px;
+            border: 3px solid #ffffff;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge-red { background: linear-gradient(135deg, #ff4365, #f43f5e); color: #fff; }
+        .badge-blue { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #fff; }
+
+        .scoreboard {
+            background: #fef08a;
+            color: #854d0e;
+            border: 3px solid #ffffff;
+            padding: 4px 22px;
+            border-radius: 25px;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.7rem;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+        }
+
+        /* LAYOUT UTAMA (TRI-SPLIT) */
+        .main-stage {
+            display: flex;
+            height: 90vh;
+            width: 100%;
+            position: relative;
+        }
+
+        /* SISI KIRI & KANAN */
+        .team-side {
+            width: 27%;
+            height: 100%;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .side-red { background: rgba(244, 63, 94, 0.12); border-right: 3px dashed rgba(244, 63, 94, 0.4); }
+        .side-blue { background: rgba(2, 132, 199, 0.12); border-left: 3px dashed rgba(2, 132, 199, 0.4); }
+
+        /* Card Kuis Kartun */
+        .quiz-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 12px;
+            border: 4px solid #0f172a;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+            color: #0f172a;
+        }
+
+        .quiz-tag {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 0.85rem;
+            padding: 3px 12px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 6px;
+            color: white;
+        }
+        .tag-red { background: #f43f5e; }
+        .tag-blue { background: #0284c7; }
+
+        .quiz-question { font-size: 0.95rem; font-weight: 800; line-height: 1.35; margin-bottom: 8px; min-height: 60px; color: #0f172a; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 5px; }
+        .btn-opt {
+            background: #f8fafc;
+            color: #0f172a;
+            border: 2px solid #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #cbd5e1;
+            text-align: left;
+            transition: all 0.1s;
+        }
+        .btn-opt:active { transform: translateY(2px); box-shadow: none; }
+        .side-red .btn-opt:hover { background: #ffe4e6; border-color: #fb7185; }
+        .side-blue .btn-opt:hover { background: #e0f2fe; border-color: #38bdf8; }
+
+        /* TOUCH D-PAD KONTROL ULAR */
+        .dpad-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .dpad-row { display: flex; gap: 6px; }
+
+        .btn-dpad {
+            width: 65px;
+            height: 65px;
+            border-radius: 20px;
+            border: 4px solid #ffffff;
+            font-size: 1.8rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+            transition: transform 0.05s;
+        }
+        .btn-dpad:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
+
+        .dpad-red { background: linear-gradient(180deg, #ff4365, #c70039); }
+        .dpad-blue { background: linear-gradient(180deg, #00b4d8, #0077b6); }
+
+        /* ARENA CANVAS (BERSIH TANPA GRID) */
+        .arena-center {
+            width: 46%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        #snakeCanvas {
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            border: 6px solid #475569;
+            border-radius: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        /* WINNER OVERLAY POPUP */
+        .win-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .win-overlay.show { opacity: 1; pointer-events: auto; }
+        
+        .win-card {
+            text-align: center;
+            background: #ffffff;
+            padding: 35px 50px;
+            border-radius: 35px;
+            border: 8px solid #facc15;
+            color: #0f172a;
+            box-shadow: 0 15px 0 rgba(0,0,0,0.3);
+        }
+        .win-title { font-family: 'Luckiest Guy', cursive; font-size: 3.2rem; margin-bottom: 10px; }
+
+        .btn-ui { padding: 10px 22px; font-family: 'Luckiest Guy', cursive; font-size: 1.1rem; border: 3px solid #fff; border-radius: 18px; cursor: pointer; color: white; }
+        .btn-yellow { background: #eab308; } .btn-green { background: #22c55e; } .btn-blue { background: #0284c7; }
+
+        sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+        sup { top: -0.5em; }
+        sub { bottom: -0.25em; }
+    </style>
+</head>
+<body>
+
+    <div id="game-app">
+        <!-- Header Bar -->
+        <div class="header-bar">
+            <div class="team-badge badge-red">🐍 ULAR MERAH</div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="scoreboard">SKOR: <span id="score-red" style="color:#f43f5e;">0</span> - <span id="score-blue" style="color:#0284c7;">0</span></div>
+                <button class="btn-ui btn-blue" onclick="resetGame()"><i class="fas fa-rotate"></i> RESET</button>
+            </div>
+            <div class="team-badge badge-blue">🐍 ULAR BIRU</div>
+        </div>
+
+        <!-- Main Stage Split -->
+        <div class="main-stage">
+            
+            <!-- SISI KIRI: TIM MERAH -->
+            <div class="team-side side-red">
+                <div class="quiz-box">
+                    <div class="quiz-tag tag-red">⚡ BENAR: ULAR +3 SEGMENT & MUSUH -2</div>
+                    <div class="quiz-question" id="q-red-text">Memuat Soal...</div>
+                    <div class="options-grid" id="q-red-options"></div>
+                </div>
+
+                <!-- D-Pad Kontrol Ular Merah -->
+                <div class="dpad-container">
+                    <button class="btn-dpad dpad-red" onclick="changeDir('RED', 'UP')"><i class="fas fa-arrow-up"></i></button>
+                    <div class="dpad-row">
+                        <button class="btn-dpad dpad-red" onclick="changeDir('RED', 'LEFT')"><i class="fas fa-arrow-left"></i></button>
+                        <button class="btn-dpad dpad-red" onclick="changeDir('RED', 'DOWN')"><i class="fas fa-arrow-down"></i></button>
+                        <button class="btn-dpad dpad-red" onclick="changeDir('RED', 'RIGHT')"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SISI TENGAH: ARENA ULAR (CANVAS BERSIH) -->
+            <div class="arena-center" id="arena-center">
+                <canvas id="snakeCanvas"></canvas>
+            </div>
+
+            <!-- SISI KANAN: TIM BIRU -->
+            <div class="team-side side-blue">
+                <div class="quiz-box">
+                    <div class="quiz-tag tag-blue">⚡ BENAR: ULAR +3 SEGMENT & MUSUH -2</div>
+                    <div class="quiz-question" id="q-blue-text">Memuat Soal...</div>
+                    <div class="options-grid" id="q-blue-options"></div>
+                </div>
+
+                <!-- D-Pad Kontrol Ular Biru -->
+                <div class="dpad-container">
+                    <button class="btn-dpad dpad-blue" onclick="changeDir('BLUE', 'UP')"><i class="fas fa-arrow-up"></i></button>
+                    <div class="dpad-row">
+                        <button class="btn-dpad dpad-blue" onclick="changeDir('BLUE', 'LEFT')"><i class="fas fa-arrow-left"></i></button>
+                        <button class="btn-dpad dpad-blue" onclick="changeDir('BLUE', 'DOWN')"><i class="fas fa-arrow-down"></i></button>
+                        <button class="btn-dpad dpad-blue" onclick="changeDir('BLUE', 'RIGHT')"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- WINNER OVERLAY POPUP -->
+    <div class="win-overlay" id="win-overlay">
+        <div class="win-card" id="win-card">
+            <div style="font-family: 'Luckiest Guy'; font-size: 2rem; color: #eab308; margin-bottom: 5px;">🏆 PERTANDINGAN SELESAI 🏆</div>
+            <div class="win-title" id="win-team-name">TIM MERAH MENANG!</div>
+            <button class="btn-ui btn-green" style="font-size: 1.4rem; padding: 10px 30px;" onclick="resetGame()">MAIN LAGI ➔</button>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================
+           GAME ENGINE: DUAL SNAKE v2 + QUIZ KIMIA
+           ========================================== */
+        const canvas = document.getElementById('snakeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const GRID_SIZE = 18; // 18x18 Grid Luas
+        let CELL_SIZE = 20;
+
+        let snakeRed = [];
+        let dirRed = { x: 1, y: 0 };
+        let scoreRed = 0;
+
+        let snakeBlue = [];
+        let dirBlue = { x: -1, y: 0 };
+        let scoreBlue = 0;
+
+        // Daftar Makanan Bervariasi
+        const FOOD_TYPES = ['🍎', '🍌', '🍓', '🍩', '🍬', '🍕', '🍔', '🍇', '🍉'];
+        let foodList = [];
+
+        let gameLoopInterval = null;
+        let isGameOver = false;
+
+        let idxRedQ = 0;
+        let idxBlueQ = 0;
+
+        // Audio Synth Web Audio API
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            if (type === 'eat') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(950, now + 0.08);
+                gain.gain.setValueAtTime(0.25, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.08);
+            }
+            else if (type === 'quiz-good') {
+                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(f, now + (i * 0.06));
+                    gain.gain.setValueAtTime(0.3, now + (i * 0.06)); gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.06) + 0.2);
+                    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now + (i * 0.06)); osc.stop(now + (i * 0.06) + 0.2);
+                });
+            }
+            else if (type === 'crash') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, now);
+                gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.3);
+            }
+        }
+
+        // 10 SOAL KIMIA LENGKAP & PATEN
+        let daftarSoal = [
+            {
+                q: "Pada proses pengisian daya baterai, terjadi perpindahan elektron melalui rangkaian listrik. Partikel yang berpindah tersebut adalah....",
+                opts: ["A. Proton", "B. Neutron", "C. Elektron", "D. Inti atom"],
+                ans: "C. Elektron"
+            },
+            {
+                q: "Atom natrium memiliki 11 proton dan 12 neutron. Nomor massa atom natrium tersebut adalah....",
+                opts: ["A. 11", "B. 12", "C. 23", "D. 24"],
+                ans: "C. 23"
+            },
+            {
+                q: "Ion magnesium (Mg<sup>2+</sup>) terbentuk ketika atom magnesium melepaskan dua elektron. Jika atom Mg memiliki 12 proton, jumlah elektron ion tersebut adalah....",
+                opts: ["A. 10", "B. 12", "C. 14", "D. 24"],
+                ans: "A. 10"
+            },
+            {
+                q: "Label sampel di laboratorium mencantumkan notasi <sup>23</sup><sub>11</sub>Na. Jumlah neutron dalam atom tersebut adalah....",
+                opts: ["A. 11", "B. 12", "C. 23", "D. 34"],
+                ans: "B. 12"
+            },
+            {
+                q: "Karbon-14 digunakan dalam penelitian memperkirakan usia benda purbakala. Jika nomor atom karbon adalah 6, jumlah neutron karbon-14 adalah....",
+                opts: ["A. 6", "B. 8", "C. 14", "D. 20"],
+                ans: "B. 8"
+            },
+            {
+                q: "Ion klorida memiliki notasi <sup>35</sup><sub>17</sub>Cl<sup>−</sup>. Jumlah elektronnya adalah....",
+                opts: ["A. 16", "B. 17", "C. 18", "D. 35"],
+                ans: "C. 18"
+            },
+            {
+                q: "Magnesium digunakan pada suar karena menghasilkan cahaya terang. Atom Mg memiliki nomor atom 12. Konfigurasi elektron kulitnya adalah....",
+                opts: ["A. 2, 8, 2", "B. 2, 10", "C. 2, 8, 1, 1", "D. 2, 6, 4"],
+                ans: "A. 2, 8, 2"
+            },
+            {
+                q: "Gas neon digunakan pada lampu reklame. Neon memiliki nomor atom 10. Konfigurasi elektron kulit neon adalah....",
+                opts: ["A. 2, 6, 2", "B. 2, 8", "C. 2, 7, 1", "D. 2, 8, 1"],
+                ans: "B. 2, 8"
+            },
+            {
+                q: "Atom klorin memiliki nomor atom 17 dan digunakan dalam pengolahan air kolam. Jumlah elektron valensi atom klorin adalah....",
+                opts: ["A. 1", "B. 2", "C. 7", "D. 8"],
+                ans: "C. 7"
+            },
+            {
+                q: "Atom kalsium memiliki nomor atom 20. Dalam keadaan netral, konfigurasi elektron kulit atom tersebut adalah....",
+                opts: ["A. 2, 8, 10", "B. 2, 8, 8, 2", "C. 2, 10, 8", "D. 2, 8, 9, 1"],
+                ans: "B. 2, 8, 8, 2"
+            }
+        ];
+
+        function resizeCanvas() {
+            const container = document.getElementById('arena-center');
+            const size = Math.min(container.clientWidth - 20, container.clientHeight - 20);
+            canvas.width = size;
+            canvas.height = size;
+            CELL_SIZE = size / GRID_SIZE;
+        }
+
+        function initSnakes() {
+            snakeRed = [
+                { x: 3, y: 4 }, { x: 2, y: 4 }, { x: 1, y: 4 }
+            ];
+            dirRed = { x: 1, y: 0 };
+
+            snakeBlue = [
+                { x: GRID_SIZE - 4, y: GRID_SIZE - 5 },
+                { x: GRID_SIZE - 3, y: GRID_SIZE - 5 },
+                { x: GRID_SIZE - 2, y: GRID_SIZE - 5 }
+            ];
+            dirBlue = { x: -1, y: 0 };
+
+            foodList = [];
+            spawnFood();
+            spawnFood();
+            spawnFood();
+            spawnFood();
+        }
+
+        function spawnFood() {
+            let fx = Math.floor(Math.random() * GRID_SIZE);
+            let fy = Math.floor(Math.random() * GRID_SIZE);
+            let icon = FOOD_TYPES[Math.floor(Math.random() * FOOD_TYPES.length)];
+            foodList.push({ x: fx, y: fy, icon: icon });
+        }
+
+        function changeDir(team, direction) {
+            if (isGameOver) return;
+            initAudio();
+
+            if (team === 'RED') {
+                if (direction === 'UP' && dirRed.y === 0) dirRed = { x: 0, y: -1 };
+                if (direction === 'DOWN' && dirRed.y === 0) dirRed = { x: 0, y: 1 };
+                if (direction === 'LEFT' && dirRed.x === 0) dirRed = { x: -1, y: 0 };
+                if (direction === 'RIGHT' && dirRed.x === 0) dirRed = { x: 1, y: 0 };
+            } else {
+                if (direction === 'UP' && dirBlue.y === 0) dirBlue = { x: 0, y: -1 };
+                if (direction === 'DOWN' && dirBlue.y === 0) dirBlue = { x: 0, y: 1 };
+                if (direction === 'LEFT' && dirBlue.x === 0) dirBlue = { x: -1, y: 0 };
+                if (direction === 'RIGHT' && dirBlue.x === 0) dirBlue = { x: 1, y: 0 };
+            }
+        }
+
+        function updateGame() {
+            if (isGameOver) return;
+
+            const newRedHead = { x: snakeRed[0].x + dirRed.x, y: snakeRed[0].y + dirRed.y };
+            const newBlueHead = { x: snakeBlue[0].x + dirBlue.x, y: snakeBlue[0].y + dirBlue.y };
+
+            // Check Collision
+            if (checkCollision(newRedHead, snakeRed, snakeBlue)) {
+                playSound('crash');
+                triggerWin('BLUE', 'Ular Merah Menabrak!');
+                return;
+            }
+
+            if (checkCollision(newBlueHead, snakeBlue, snakeRed)) {
+                playSound('crash');
+                triggerWin('RED', 'Ular Biru Menabrak!');
+                return;
+            }
+
+            // Move Red
+            snakeRed.unshift(newRedHead);
+            let ateRed = false;
+            foodList.forEach((f, idx) => {
+                if (f.x === newRedHead.x && f.y === newRedHead.y) {
+                    ateRed = true;
+                    scoreRed += 10;
+                    document.getElementById('score-red').innerText = scoreRed;
+                    playSound('eat');
+                    foodList.splice(idx, 1);
+                    spawnFood();
+                }
+            });
+            if (!ateRed) snakeRed.pop();
+
+            // Move Blue
+            snakeBlue.unshift(newBlueHead);
+            let ateBlue = false;
+            foodList.forEach((f, idx) => {
+                if (f.x === newBlueHead.x && f.y === newBlueHead.y) {
+                    ateBlue = true;
+                    scoreBlue += 10;
+                    document.getElementById('score-blue').innerText = scoreBlue;
+                    playSound('eat');
+                    foodList.splice(idx, 1);
+                    spawnFood();
+                }
+            });
+            if (!ateBlue) snakeBlue.pop();
+
+            renderCanvas();
+        }
+
+        function checkCollision(head, mySnake, otherSnake) {
+            // Wall Collision
+            if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) return true;
+
+            // Self Collision
+            for (let i = 0; i < mySnake.length; i++) {
+                if (head.x === mySnake[i].x && head.y === mySnake[i].y) return true;
+            }
+
+            // Opponent Body Collision
+            for (let i = 0; i < otherSnake.length; i++) {
+                if (head.x === otherSnake[i].x && head.y === otherSnake[i].y) return true;
+            }
+
+            return false;
+        }
+
+        function renderCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Variasi Makanan (Tanpa Kotak Grid)
+            ctx.font = `${CELL_SIZE * 0.85}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            foodList.forEach(f => {
+                ctx.fillText(f.icon, f.x * CELL_SIZE + CELL_SIZE / 2, f.y * CELL_SIZE + CELL_SIZE / 2);
+            });
+
+            // 2. Draw Ular Merah (Cute Cartoon Snake)
+            drawCuteSnake(snakeRed, dirRed, '#f43f5e', '#fb7185');
+
+            // 3. Draw Ular Biru (Cute Cartoon Snake)
+            drawCuteSnake(snakeBlue, dirBlue, '#0284c7', '#38bdf8');
+        }
+
+        function drawCuteSnake(snake, dir, headColor, bodyColor) {
+            snake.forEach((seg, idx) => {
+                const x = seg.x * CELL_SIZE + CELL_SIZE / 2;
+                const y = seg.y * CELL_SIZE + CELL_SIZE / 2;
+                const radius = (CELL_SIZE / 2) - 2;
+
+                if (idx === 0) {
+                    // KEPALA ULAR CUTE (Dengan Mata & Pipi)
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius + 2, 0, Math.PI * 2);
+                    ctx.fillStyle = headColor;
+                    ctx.fill();
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+
+                    // Mata Bulat Lucu (👁️👁️)
+                    let eyeOffsetX = dir.y !== 0 ? 5 : 0;
+                    let eyeOffsetY = dir.x !== 0 ? 5 : 0;
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(x - eyeOffsetX + dir.x * 4, y - eyeOffsetY + dir.y * 4, 5, 0, Math.PI * 2);
+                    ctx.arc(x + eyeOffsetX + dir.x * 4, y + eyeOffsetY + dir.y * 4, 5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Pupil Hitam
+                    ctx.fillStyle = '#0f172a';
+                    ctx.beginPath();
+                    ctx.arc(x - eyeOffsetX + dir.x * 6, y - eyeOffsetY + dir.y * 6, 2.5, 0, Math.PI * 2);
+                    ctx.arc(x + eyeOffsetX + dir.x * 6, y + eyeOffsetY + dir.y * 6, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Pipi Merah Gemoy
+                    ctx.fillStyle = 'rgba(251, 113, 133, 0.6)';
+                    ctx.beginPath();
+                    ctx.arc(x - eyeOffsetX - 2, y - eyeOffsetY + 6, 3, 0, Math.PI * 2);
+                    ctx.arc(x + eyeOffsetX + 2, y + eyeOffsetY + 6, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // BADAN ULAR CANDY
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = bodyColor;
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.stroke();
+                }
+            });
+        }
+
+        // KUIS MEKANIK: BENAR = ULAR +3, MUSUH -2
+        function answerQuestion(team, selectedOpt) {
+            if (isGameOver) return;
+            let currentQ = (team === 'RED') ? daftarSoal[idxRedQ] : daftarSoal[idxBlueQ];
+
+            if (selectedOpt === currentQ.ans) {
+                playSound('quiz-good');
+
+                if (team === 'RED') {
+                    scoreRed += 30;
+                    document.getElementById('score-red').innerText = scoreRed;
+                    let lastTail = snakeRed[snakeRed.length - 1];
+                    snakeRed.push({ ...lastTail }, { ...lastTail }, { ...lastTail });
+
+                    if (snakeBlue.length > 2) { snakeBlue.pop(); snakeBlue.pop(); }
+
+                    idxRedQ = (idxRedQ + 1) % daftarSoal.length;
+                    renderQuiz('RED');
+                } else {
+                    scoreBlue += 30;
+                    document.getElementById('score-blue').innerText = scoreBlue;
+                    let lastTail = snakeBlue[snakeBlue.length - 1];
+                    snakeBlue.push({ ...lastTail }, { ...lastTail }, { ...lastTail });
+
+                    if (snakeRed.length > 2) { snakeRed.pop(); snakeRed.pop(); }
+
+                    idxBlueQ = (idxBlueQ + 1) % daftarSoal.length;
+                    renderQuiz('BLUE');
+                }
+            } else {
+                playSound('crash');
+                if (team === 'RED') {
+                    idxRedQ = (idxRedQ + 1) % daftarSoal.length;
+                    renderQuiz('RED');
+                } else {
+                    idxBlueQ = (idxBlueQ + 1) % daftarSoal.length;
+                    renderQuiz('BLUE');
+                }
+            }
+        }
+
+        function renderQuiz(team) {
+            if (team === 'RED') {
+                const q = daftarSoal[idxRedQ];
+                document.getElementById('q-red-text').innerHTML = q.q;
+                const optContainer = document.getElementById('q-red-options');
+                optContainer.innerHTML = '';
+                q.opts.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-opt';
+                    btn.innerHTML = opt;
+                    btn.onclick = () => answerQuestion('RED', opt);
+                    optContainer.appendChild(btn);
+                });
+            } else {
+                const q = daftarSoal[idxBlueQ];
+                document.getElementById('q-blue-text').innerHTML = q.q;
+                const optContainer = document.getElementById('q-blue-options');
+                optContainer.innerHTML = '';
+                q.opts.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-opt';
+                    btn.innerHTML = opt;
+                    btn.onclick = () => answerQuestion('BLUE', opt);
+                    optContainer.appendChild(btn);
+                });
+            }
+        }
+
+        function triggerWin(team, reason) {
+            isGameOver = true;
+            clearInterval(gameLoopInterval);
+
+            const winOverlay = document.getElementById('win-overlay');
+            const winTitle = document.getElementById('win-team-name');
+
+            if (team === 'RED') {
+                winTitle.innerText = "🐍 TIM ULAR MERAH MENANG!";
+                winTitle.style.color = "#f43f5e";
+            } else {
+                winTitle.innerText = "🐍 TIM ULAR BIRU MENANG!";
+                winTitle.style.color = "#0284c7";
+            }
+
+            winOverlay.classList.add('show');
+        }
+
+        function resetGame() {
+            clearInterval(gameLoopInterval);
+            isGameOver = false;
+            document.getElementById('win-overlay').classList.remove('show');
+            
+            initSnakes();
+            renderQuiz('RED');
+            renderQuiz('BLUE');
+
+            // Gerakan diperlambat ke 210ms per langkah
+            gameLoopInterval = setInterval(updateGame, 210);
+        }
+
+        window.onload = () => {
+            resizeCanvas();
+            window.onresize = resizeCanvas;
+
+            // Kontrol Keyboard Opsional (WASD = Merah, Panah = Biru)
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'w' || e.key === 'W') changeDir('RED', 'UP');
+                if (e.key === 's' || e.key === 'S') changeDir('RED', 'DOWN');
+                if (e.key === 'a' || e.key === 'A') changeDir('RED', 'LEFT');
+                if (e.key === 'd' || e.key === 'D') changeDir('RED', 'RIGHT');
+
+                if (e.key === 'ArrowUp') changeDir('BLUE', 'UP');
+                if (e.key === 'ArrowDown') changeDir('BLUE', 'DOWN');
+                if (e.key === 'ArrowLeft') changeDir('BLUE', 'LEFT');
+                if (e.key === 'ArrowRight') changeDir('BLUE', 'RIGHT');
+            });
+
+            resetGame();
+        };
+    </script>
+</body>
+</html>

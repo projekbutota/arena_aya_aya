@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Game Tarik Tambang IFP - Anak Gemoy & Kimia Edition</title>
+    <!-- Google Fonts Kartun & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Luckiest+Guy&family=Sniglet:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sniglet', 'Fredoka', cursive; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+        body, html { width: 100vw; height: 100vh; overflow: hidden; background: #38bdf8; color: #fff; }
+
+        /* Effek Screen Shake (Layar Bergetar) */
+        @keyframes screenShake {
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(-1deg); }
+            40% { transform: translate(3px, 2px) rotate(1deg); }
+            60% { transform: translate(-2px, 1px) rotate(0deg); }
+            80% { transform: translate(2px, -1px) rotate(1deg); }
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+        .shake { animation: screenShake 0.25s ease-in-out; }
+
+        #game-app {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 40%, #86efac 40%, #4ade80 100%);
+            overflow: hidden;
+        }
+
+        /* Top Bar Header */
+        .header-bar {
+            height: 11vh;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-bottom: 4px solid #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            z-index: 10;
+        }
+
+        .team-badge {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            padding: 6px 20px;
+            border-radius: 20px;
+            border: 4px solid #ffffff;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge-red { background: #f43f5e; color: #fff; text-shadow: 2px 2px 0 #be123c; }
+        .badge-blue { background: #0284c7; color: #fff; text-shadow: 2px 2px 0 #0369a1; }
+
+        .scoreboard {
+            background: #fef08a;
+            color: #854d0e;
+            border: 4px solid #ffffff;
+            padding: 6px 24px;
+            border-radius: 30px;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.8rem;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+        }
+
+        /* MAIN LAYOUT (TRI-SPLIT: TIM MERAH - ARENA TALI - TIM BIRU) */
+        .main-stage {
+            display: flex;
+            height: 89vh;
+            width: 100%;
+            position: relative;
+        }
+
+        /* SISI KIRI & KANAN (KONTROL TIM) */
+        .team-column {
+            width: 30%;
+            height: 100%;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .column-red { background: rgba(244, 63, 94, 0.15); border-right: 4px dashed rgba(255, 255, 255, 0.6); }
+        .column-blue { background: rgba(2, 132, 199, 0.15); border-left: 4px dashed rgba(255, 255, 255, 0.6); }
+
+        /* Card Soal Ringkas Kartun */
+        .quiz-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 12px;
+            border: 4px solid #0f172a;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
+            color: #0f172a;
+        }
+        .quiz-tag {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 0.95rem;
+            padding: 3px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 6px;
+            color: white;
+        }
+        .tag-red { background: #f43f5e; }
+        .tag-blue { background: #0284c7; }
+
+        .quiz-question { font-size: 1.05rem; font-weight: 800; line-height: 1.35; margin-bottom: 10px; min-height: 65px; color: #1e293b; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
+        .btn-opt {
+            background: #f8fafc;
+            color: #0f172a;
+            border: 3px solid #cbd5e1;
+            padding: 8px 10px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #cbd5e1;
+            transition: all 0.1s;
+            text-align: left;
+        }
+        .btn-opt:active { transform: translateY(3px); box-shadow: none; }
+        .column-red .btn-opt:hover { background: #ffe4e6; border-color: #fb7185; }
+        .column-blue .btn-opt:hover { background: #e0f2fe; border-color: #38bdf8; }
+
+        /* TOMBOL RAKSASA TARIK! (SISI KIRI & KANAN) */
+        .btn-pull-giant {
+            width: 100%;
+            height: 110px;
+            border-radius: 30px;
+            border: 5px solid #ffffff;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 2.5rem;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.25);
+            transition: transform 0.05s ease;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+            text-transform: uppercase;
+        }
+        .btn-pull-giant:active { transform: translateY(6px); box-shadow: 0 4px 0 rgba(0,0,0,0.25); }
+
+        .btn-pull-red { background: linear-gradient(180deg, #ff4365 0%, #c70039 100%); }
+        .btn-pull-blue { background: linear-gradient(180deg, #00b4d8 0%, #0077b6 100%); }
+
+        /* ARENA TENGAH (ANIMASI CANVAS TALI & KARAKTER) */
+        .arena-center {
+            width: 40%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #ropeCanvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 2; }
+        #confettiCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; }
+
+        /* POPUP ANIMASI ANAK GEMOY / GODE POWER BOOST */
+        .gemoy-popup {
+            position: absolute;
+            top: 22%;
+            background: #ffffff;
+            border: 5px solid #facc15;
+            border-radius: 25px;
+            padding: 12px 20px;
+            box-shadow: 0 12px 0 rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 15;
+            opacity: 0;
+            transform: scale(0.3) translateY(40px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .gemoy-popup.show { opacity: 1; transform: scale(1) translateY(0); }
+        .gemoy-avatar { font-size: 3.5rem; animation: bounceGemoy 0.6s infinite alternate; }
+        .gemoy-text { font-family: 'Luckiest Guy', cursive; color: #0f172a; text-align: left; }
+        .gemoy-points { font-size: 1.8rem; color: #dc2626; text-shadow: 1px 1px 0 #facc15; }
+
+        @keyframes bounceGemoy {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-10px) scale(1.1); }
+        }
+
+        .popup-red { left: 5%; }
+        .popup-blue { right: 5%; }
+
+        /* WINNER OVERLAY POPUP KARTUN */
+        .win-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .win-overlay.show { opacity: 1; pointer-events: auto; }
+        
+        .win-card {
+            text-align: center;
+            background: #ffffff;
+            padding: 40px 60px;
+            border-radius: 40px;
+            border: 8px solid #facc15;
+            box-shadow: 0 15px 0 rgba(0,0,0,0.3);
+            color: #0f172a;
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .win-overlay.show .win-card { transform: scale(1); }
+        .win-title { font-family: 'Luckiest Guy', cursive; font-size: 3.8rem; margin-bottom: 10px; }
+
+        /* Modal Settings Soal */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 60; display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: #ffffff; padding: 25px; border-radius: 30px; width: 90%; max-width: 650px; border: 6px solid #0f172a; color: #0f172a; }
+        textarea { width: 100%; height: 230px; background: #f8fafc; color: #0f172a; padding: 12px; border-radius: 15px; border: 3px solid #cbd5e1; font-family: monospace; font-size: 0.9rem; margin: 12px 0; }
+        
+        .btn-ui { padding: 10px 22px; font-family: 'Luckiest Guy', cursive; font-size: 1.1rem; border: 3px solid #fff; border-radius: 18px; cursor: pointer; color: white; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+        .btn-yellow { background: #eab308; } .btn-green { background: #22c55e; } .btn-blue { background: #0284c7; }
+
+        sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+        sup { top: -0.5em; }
+        sub { bottom: -0.25em; }
+    </style>
+</head>
+<body>
+
+    <div id="game-app">
+        <!-- Header Bar -->
+        <div class="header-bar">
+            <div class="team-badge badge-red">👦🏽 TIM MERAH</div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="scoreboard">SKOR: <span id="score-red" style="color:#f43f5e;">0</span> - <span id="score-blue" style="color:#0284c7;">0</span></div>
+                <button class="btn-ui btn-yellow" onclick="bukaModalSoal()"><i class="fas fa-gear"></i> SOAL</button>
+                <button class="btn-ui btn-blue" onclick="resetGame()"><i class="fas fa-rotate"></i> RESET</button>
+            </div>
+            <div class="team-badge badge-blue">👧🏻 TIM BIRU</div>
+        </div>
+
+        <!-- Main Tri-Split Stage -->
+        <div class="main-stage">
+            
+            <!-- SISI KIRI: TIM MERAH -->
+            <div class="team-column column-red">
+                <div class="quiz-box">
+                    <div class="quiz-tag tag-red" id="tag-power-red">⚡ BONUS POWER +50</div>
+                    <div class="quiz-question" id="q-red-text">Memuat Soal...</div>
+                    <div class="options-grid" id="q-red-options"></div>
+                </div>
+
+                <button class="btn-pull-giant btn-pull-red" id="btn-pull-red">
+                    <i class="fas fa-hand-rock"></i> TARIK!
+                </button>
+            </div>
+
+            <!-- SISI TENGAH: ARENA ANIMASI TALI KARTUN 60 FPS -->
+            <div class="arena-center" id="arena-center">
+                <canvas id="ropeCanvas"></canvas>
+                <canvas id="confettiCanvas"></canvas>
+                
+                <!-- POPUP ANIMASI ANAK GEMOY GODE -->
+                <div class="gemoy-popup popup-red" id="gemoy-red">
+                    <div class="gemoy-avatar">👶🏻💪</div>
+                    <div class="gemoy-text">
+                        <div style="font-size: 0.9rem; color: #64748b;">ANAK GEMOY BANTU!</div>
+                        <div class="gemoy-points" id="gemoy-pts-red">+70 POWER!</div>
+                    </div>
+                </div>
+
+                <div class="gemoy-popup popup-blue" id="gemoy-blue">
+                    <div class="gemoy-avatar">👧🏼💪</div>
+                    <div class="gemoy-text">
+                        <div style="font-size: 0.9rem; color: #64748b;">ANAK GEMOY BANTU!</div>
+                        <div class="gemoy-points" id="gemoy-pts-blue">+70 POWER!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SISI KANAN: TIM BIRU -->
+            <div class="team-column column-blue">
+                <div class="quiz-box">
+                    <div class="quiz-tag tag-blue" id="tag-power-blue">⚡ BONUS POWER +50</div>
+                    <div class="quiz-question" id="q-blue-text">Memuat Soal...</div>
+                    <div class="options-grid" id="q-blue-options"></div>
+                </div>
+
+                <button class="btn-pull-giant btn-pull-blue" id="btn-pull-blue">
+                    TARIK! <i class="fas fa-hand-rock"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- WINNER OVERLAY POPUP -->
+    <div class="win-overlay" id="win-overlay">
+        <div class="win-card" id="win-card">
+            <div style="font-family: 'Luckiest Guy'; font-size: 2rem; color: #eab308; margin-bottom: 5px;">🏆 PERTANDINGAN SELESAI 🏆</div>
+            <div class="win-title" id="win-team-name">TIM MERAH MENANG!</div>
+            <button class="btn-ui btn-green" style="font-size: 1.5rem; padding: 12px 40px;" onclick="resetGame()">MAIN LAGI ➔</button>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT SOAL -->
+    <div class="modal" id="modal-soal" style="display: none;">
+        <div class="modal-content">
+            <h2 style="font-family:'Luckiest Guy'; font-size: 1.8rem;"><i class="fas fa-edit"></i> Edit Soal Kuis</h2>
+            <textarea id="json-input"></textarea>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn-ui btn-green" onclick="simpanSoal()">SIMPAN</button>
+                <button class="btn-ui btn-yellow" onclick="tutupModalSoal()">BATAL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================
+           GAME LOGIC & REAL-TIME CANVAS ANIMATION
+           ========================================== */
+        let ropePos = 50; // 50 = Center, 15 = Red Wins, 85 = Blue Wins
+        let targetRopePos = 50;
+        
+        let pullWobble = 0;
+        let isRedPulling = false;
+        let isBluePulling = false;
+
+        let scoreRed = 0;
+        let scoreBlue = 0;
+        let isGameOver = false;
+
+        let idxRedQ = 0;
+        let idxBlueQ = 0;
+
+        // Audio Synth Web Audio API
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            if (type === 'pull-red') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(220, now); osc.frequency.exponentialRampToValueAtTime(110, now + 0.08);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.08);
+            } 
+            else if (type === 'pull-blue') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(350, now); osc.frequency.exponentialRampToValueAtTime(180, now + 0.08);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.08);
+            }
+            else if (type === 'power') {
+                [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, i) => {
+                    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(f, now + (i * 0.06));
+                    gain.gain.setValueAtTime(0.35, now + (i * 0.06)); gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.06) + 0.22);
+                    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now + (i * 0.06)); osc.stop(now + (i * 0.06) + 0.22);
+                });
+            }
+            else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(130, now);
+                gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.25);
+            }
+            else if (type === 'win') {
+                [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, i) => {
+                    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(f, now + (i * 0.1));
+                    gain.gain.setValueAtTime(0.4, now + (i * 0.1)); gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.35);
+                    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now + (i * 0.1)); osc.stop(now + (i * 0.1) + 0.35);
+                });
+            }
+        }
+
+        function triggerScreenShake() {
+            const app = document.getElementById('game-app');
+            app.classList.remove('shake');
+            void app.offsetWidth;
+            app.classList.add('shake');
+        }
+
+        // 10 SOAL KIMIA MATERI ATOM & ION PATEN DENGAN POIN BONUS BERVARIASI
+        let daftarSoal = [
+            {
+                q: "Atom litium netral memiliki nomor atom 3 dan nomor massa 7. Saat bereaksi, atom tersebut melepaskan satu elektron menjadi ion Li<sup>+</sup>.<br>Jumlah proton, neutron, dan elektron ion tersebut secara berurutan adalah....",
+                opts: ["A. 3, 4, 3", "B. 3, 4, 2", "C. 3, 7, 2", "D. 4, 3, 2"],
+                ans: "B. 3, 4, 2",
+                power: 50
+            },
+            {
+                q: "Sebuah partikel memiliki 16 proton, 18 elektron, dan 16 neutron. Pernyataan yang tepat tentang partikel tersebut adalah....",
+                opts: ["A. Atom netral (nomor massa 32)", "B. Ion bermuatan −2 (nomor massa 32)", "C. Ion bermuatan +2 (nomor massa 34)", "D. Ion bermuatan −2 (nomor massa 34)"],
+                ans: "B. Ion bermuatan −2 (nomor massa 32)",
+                power: 70
+            },
+            {
+                q: "Atom P memiliki 11 proton dan 12 neutron, sedangkan atom Q memiliki 11 proton dan 13 neutron. Kesimpulan yang tepat adalah....",
+                opts: ["A. P dan Q merupakan unsur berbeda", "B. P dan Q merupakan isotop unsur yang sama", "C. P dan Q memiliki nomor massa yang sama", "D. P dan Q memiliki jumlah neutron yang sama"],
+                ans: "B. P dan Q merupakan isotop unsur yang sama",
+                power: 40
+            },
+            {
+                q: "Sampel laboratorium diberi label <sup>40</sup><sub>20</sub>Ca. Jumlah partikel penyusun dalam satu atom netral tersebut adalah....",
+                opts: ["A. 20 proton, 20 neutron, 20 elektron", "B. 20 proton, 40 neutron, 20 elektron", "C. 40 proton, 20 neutron, 20 elektron", "D. 20 proton, 20 neutron, 40 elektron"],
+                ans: "A. 20 proton, 20 neutron, 20 elektron",
+                power: 60
+            },
+            {
+                q: "Ion X<sup>3+</sup> memiliki 10 elektron dan nomor massa 27. Notasi atom yang tepat untuk ion tersebut adalah....",
+                opts: ["A. <sup>27</sup><sub>10</sub>X<sup>3+</sup>", "B. <sup>27</sup><sub>13</sub>X<sup>3+</sup>", "C. <sup>27</sup><sub>7</sub>X<sup>3+</sup>", "D. <sup>13</sup><sub>27</sub>X<sup>3+</sup>"],
+                ans: "B. <sup>27</sup><sub>13</sub>X<sup>3+</sup>",
+                power: 80
+            },
+            {
+                q: "Karbon-12 dan karbon-14 digunakan dalam berbagai kajian ilmiah. Kedua atom netral tersebut memiliki....",
+                opts: ["A. Jumlah proton berbeda dan elektron sama", "B. Jumlah neutron sama dan proton berbeda", "C. Jumlah proton dan elektron sama, tetapi neutron berbeda", "D. Jumlah proton, neutron, dan elektron sama"],
+                ans: "C. Jumlah proton dan elektron sama, tetapi neutron berbeda",
+                power: 50
+            },
+            {
+                q: "Natrium memiliki nomor atom 11. Atom ini cenderung melepaskan satu elektron saat membentuk ion stabil. Konfigurasi elektron atom natrium dan ion natrium secara berurutan adalah....",
+                opts: ["A. 2, 8, 1 dan 2, 8", "B. 2, 8 dan 2, 8, 1", "C. 2, 7, 2 dan 2, 8", "D. 2, 8, 1 dan 2, 8, 2"],
+                ans: "A. 2, 8, 1 dan 2, 8",
+                power: 65
+            },
+            {
+                q: "Sebuah atom netral memiliki konfigurasi elektron kulit 2, 8, 7. Jika atom tersebut menerima satu elektron, konfigurasi ion yang terbentuk adalah....",
+                opts: ["A. 2, 8, 6", "B. 2, 8, 7", "C. 2, 8, 8", "D. 2, 9, 7"],
+                ans: "C. 2, 8, 8",
+                power: 45
+            },
+            {
+                q: "Unsur A memiliki konfigurasi elektron 2, 8, 2, sedangkan unsur B memiliki konfigurasi 2, 8, 7. Jika keduanya membentuk senyawa ion, kemungkinan perpindahan elektron yang tepat adalah....",
+                opts: ["A. A menerima satu elektron dari B", "B. A melepaskan dua elektron, masing-masing diterima oleh atom B", "C. B melepaskan tujuh elektron kepada A", "D. A dan B sama-sama melepaskan elektron"],
+                ans: "B. A melepaskan dua elektron, masing-masing diterima oleh atom B",
+                power: 85
+            },
+            {
+                q: "Ion Y<sup>2−</sup> memiliki konfigurasi elektron 2, 8, 8. Jika nomor massa unsur Y adalah 32, jumlah neutron atom Y adalah....",
+                opts: ["A. 14", "B. 16", "C. 18", "D. 20"],
+                ans: "B. 16",
+                power: 100
+            }
+        ];
+
+        // Canvas Rendering Rope & Dynamic Kids Avatars
+        const canvas = document.getElementById('ropeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = document.getElementById('arena-center');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        function drawRopeArena() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const centerY = h * 0.55;
+
+            ropePos += (targetRopePos - ropePos) * 0.12;
+            const flagX = (ropePos / 100) * w;
+
+            const finishRedX = 0.18 * w;
+            const finishBlueX = 0.82 * w;
+
+            // Batas Menang Line
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#f43f5e';
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath(); ctx.moveTo(finishRedX, h * 0.2); ctx.lineTo(finishRedX, h * 0.85); ctx.stroke();
+
+            ctx.strokeStyle = '#0284c7';
+            ctx.beginPath(); ctx.moveTo(finishBlueX, h * 0.2); ctx.lineTo(finishBlueX, h * 0.85); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Animated Rope
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = '#d97706';
+            ctx.lineCap = 'round';
+
+            pullWobble += 0.15;
+
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            
+            for (let x = 0; x <= w; x += 15) {
+                let wave = Math.sin(x * 0.03 + pullWobble) * (isRedPulling || isBluePulling ? 6 : 2);
+                ctx.lineTo(x, centerY + wave);
+            }
+            ctx.stroke();
+
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#fef08a';
+            ctx.stroke();
+
+            // Draw Cartoon Kids Avatars Pulling (Anak Laki-Laki 👦🏽 vs Anak Perempuan 👧🏻)
+            // Tim Merah (Kiri)
+            ctx.font = '55px serif';
+            ctx.textAlign = 'center';
+            let redLean = isRedPulling ? -15 : -5;
+            
+            ctx.save();
+            ctx.translate(flagX - 110, centerY - 10);
+            ctx.rotate((redLean * Math.PI) / 180);
+            ctx.fillText('👦🏽', 0, 0);
+            ctx.fillText('👦🏻', -60, 0);
+            ctx.restore();
+
+            // Tim Biru (Kanan)
+            let blueLean = isBluePulling ? 15 : 5;
+            ctx.save();
+            ctx.translate(flagX + 110, centerY - 10);
+            ctx.rotate((blueLean * Math.PI) / 180);
+            ctx.fillText('👧🏻', 0, 0);
+            ctx.fillText('👧🏽', 60, 0);
+            ctx.restore();
+
+            // Draw Flag Badge
+            ctx.save();
+            ctx.translate(flagX, centerY);
+            
+            ctx.beginPath();
+            ctx.arc(0, 0, 22, 0, Math.PI * 2);
+            ctx.fillStyle = '#facc15';
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            ctx.font = '24px sans-serif';
+            ctx.fillText('🚩', 0, 8);
+            ctx.restore();
+
+            if (targetRopePos <= 18 && !isGameOver) {
+                triggerWin('RED');
+            } else if (targetRopePos >= 82 && !isGameOver) {
+                triggerWin('BLUE');
+            }
+
+            requestAnimationFrame(drawRopeArena);
+        }
+
+        function pullRed() {
+            if (isGameOver) return;
+            targetRopePos = Math.max(15, targetRopePos - 1.5);
+            isRedPulling = true;
+            setTimeout(() => isRedPulling = false, 150);
+            playSound('pull-red');
+            triggerScreenShake();
+        }
+
+        function pullBlue() {
+            if (isGameOver) return;
+            targetRopePos = Math.min(85, targetRopePos + 1.5);
+            isBluePulling = true;
+            setTimeout(() => isBluePulling = false, 150);
+            playSound('pull-blue');
+            triggerScreenShake();
+        }
+
+        // Power Boost Kuis dengan Poin Variasi + Animasi Gemoy
+        function answerQuestion(team, selectedOpt) {
+            if (isGameOver) return;
+            let currentQ = (team === 'RED') ? daftarSoal[idxRedQ] : daftarSoal[idxBlueQ];
+
+            if (selectedOpt === currentQ.ans) {
+                playSound('power');
+                const powerPts = currentQ.power || 50;
+                showGemoyPopup(team, powerPts);
+                triggerScreenShake();
+
+                // Tarikan berdasarkan poin power
+                const shiftDist = (powerPts / 100) * 22;
+
+                if (team === 'RED') {
+                    targetRopePos = Math.max(15, targetRopePos - shiftDist);
+                    idxRedQ = (idxRedQ + 1) % daftarSoal.length;
+                    renderQuiz('RED');
+                } else {
+                    targetRopePos = Math.min(85, targetRopePos + shiftDist);
+                    idxBlueQ = (idxBlueQ + 1) % daftarSoal.length;
+                    renderQuiz('BLUE');
+                }
+            } else {
+                playSound('wrong');
+                if (team === 'RED') {
+                    idxRedQ = (idxRedQ + 1) % daftarSoal.length;
+                    renderQuiz('RED');
+                } else {
+                    idxBlueQ = (idxBlueQ + 1) % daftarSoal.length;
+                    renderQuiz('BLUE');
+                }
+            }
+        }
+
+        function showGemoyPopup(team, pts) {
+            const popup = document.getElementById(team === 'RED' ? 'gemoy-red' : 'gemoy-blue');
+            const ptsElem = document.getElementById(team === 'RED' ? 'gemoy-pts-red' : 'gemoy-pts-blue');
+            
+            ptsElem.innerText = `+${pts} POWER!`;
+            popup.classList.add('show');
+            
+            setTimeout(() => popup.classList.remove('show'), 1600);
+        }
+
+        function renderQuiz(team) {
+            if (team === 'RED') {
+                const q = daftarSoal[idxRedQ];
+                document.getElementById('q-red-text').innerHTML = q.q;
+                document.getElementById('tag-power-red').innerText = `⚡ BONUS POWER +${q.power}`;
+                const optContainer = document.getElementById('q-red-options');
+                optContainer.innerHTML = '';
+                q.opts.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-opt';
+                    btn.innerHTML = opt;
+                    btn.onclick = () => answerQuestion('RED', opt);
+                    optContainer.appendChild(btn);
+                });
+            } else {
+                const q = daftarSoal[idxBlueQ];
+                document.getElementById('q-blue-text').innerHTML = q.q;
+                document.getElementById('tag-power-blue').innerText = `⚡ BONUS POWER +${q.power}`;
+                const optContainer = document.getElementById('q-blue-options');
+                optContainer.innerHTML = '';
+                q.opts.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-opt';
+                    btn.innerHTML = opt;
+                    btn.onclick = () => answerQuestion('BLUE', opt);
+                    optContainer.appendChild(btn);
+                });
+            }
+        }
+
+        function triggerConfetti() {
+            const cCanvas = document.getElementById('confettiCanvas');
+            const cCtx = cCanvas.getContext('2d');
+            cCanvas.width = window.innerWidth;
+            cCanvas.height = window.innerHeight;
+
+            let particles = [];
+            const colors = ['#facc15', '#f43f5e', '#38bdf8', '#4ade80', '#a855f7'];
+
+            for (let i = 0; i < 120; i++) {
+                particles.push({
+                    x: cCanvas.width * 0.5,
+                    y: cCanvas.height * 0.4,
+                    vx: (Math.random() - 0.5) * 18,
+                    vy: (Math.random() - 0.8) * 20,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 12 + 6,
+                    rot: Math.random() * 360
+                });
+            }
+
+            function render() {
+                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+                let alive = false;
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.4;
+                    p.rot += 6;
+
+                    if (p.y < cCanvas.height) alive = true;
+
+                    cCtx.save();
+                    cCtx.translate(p.x, p.y);
+                    cCtx.rotate((p.rot * Math.PI) / 180);
+                    cCtx.fillStyle = p.color;
+                    cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    cCtx.restore();
+                });
+
+                if (alive) requestAnimationFrame(render);
+            }
+            render();
+        }
+
+        function triggerWin(team) {
+            isGameOver = true;
+            playSound('win');
+            triggerConfetti();
+
+            const winOverlay = document.getElementById('win-overlay');
+            const winCard = document.getElementById('win-card');
+            const winTitle = document.getElementById('win-team-name');
+
+            if (team === 'RED') {
+                scoreRed++;
+                document.getElementById('score-red').innerText = scoreRed;
+                winTitle.innerText = "👦🏽 TIM MERAH MENANG!";
+                winTitle.style.color = "#f43f5e";
+                winCard.style.borderColor = "#f43f5e";
+            } else {
+                scoreBlue++;
+                document.getElementById('score-blue').innerText = scoreBlue;
+                winTitle.innerText = "👧🏻 TIM BIRU MENANG!";
+                winTitle.style.color = "#0284c7";
+                winCard.style.borderColor = "#0284c7";
+            }
+
+            winOverlay.classList.add('show');
+        }
+
+        function resetGame() {
+            ropePos = 50;
+            targetRopePos = 50;
+            isGameOver = false;
+            document.getElementById('win-overlay').classList.remove('show');
+            renderQuiz('RED');
+            renderQuiz('BLUE');
+        }
+
+        function bukaModalSoal() {
+            document.getElementById('json-input').value = JSON.stringify(daftarSoal, null, 2);
+            document.getElementById('modal-soal').style.display = 'flex';
+        }
+
+        function tutupModalSoal() {
+            document.getElementById('modal-soal').style.display = 'none';
+        }
+
+        function simpanSoal() {
+            try {
+                const dataBaru = JSON.parse(document.getElementById('json-input').value);
+                if (Array.isArray(dataBaru) && dataBaru.length > 0) {
+                    daftarSoal = dataBaru;
+                    idxRedQ = 0; idxBlueQ = 0;
+                    tutupModalSoal();
+                    resetGame();
+                } else {
+                    alert("Format JSON salah!");
+                }
+            } catch (e) {
+                alert("Kesalahan penulisan format JSON!");
+            }
+        }
+
+        window.onload = () => {
+            resizeCanvas();
+            window.onresize = resizeCanvas;
+
+            const btnRed = document.getElementById('btn-pull-red');
+            const btnBlue = document.getElementById('btn-pull-blue');
+
+            btnRed.addEventListener('touchstart', (e) => { e.preventDefault(); pullRed(); });
+            btnRed.addEventListener('click', () => pullRed());
+
+            btnBlue.addEventListener('touchstart', (e) => { e.preventDefault(); pullBlue(); });
+            btnBlue.addEventListener('click', () => pullBlue());
+
+            document.body.addEventListener('touchstart', initAudio, { once: true });
+            document.body.addEventListener('click', initAudio, { once: true });
+
+            resetGame();
+            drawRopeArena();
+        };
+    </script>
+</body>
+</html>
