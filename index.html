@@ -13,6 +13,9 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; user-select: none; }
         
         body {
+            /* MENGGUNAKAN BG-MAIN DENGAN OVERLAY TRANS-LIGHT */
+            background: url('bg-main.png') no-repeat center center fixed;
+            background-size: cover;
             background-color: #f0f4f9;
             color: #1e293b;
             min-height: 100vh;
@@ -21,12 +24,23 @@
             justify-content: center;
         }
 
-        /* CONTAINER DEDICATED DASHBOARD */
+        /* Overlay tipis transparan agar UI dashboard tetap bersih & terbaca */
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(240, 244, 249, 0.88);
+            backdrop-filter: blur(6px);
+            z-index: -1;
+        }
+
+        /* CONTAINER DASHBOARD UI */
         .dashboard-container {
             display: flex;
             width: 100%;
             max-width: 1440px;
             gap: 24px;
+            position: relative;
+            z-index: 1;
         }
 
         /* 1. SIDEBAR KIRI */
@@ -38,7 +52,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
             border: 1px solid #e2e8f0;
             flex-shrink: 0;
         }
@@ -95,7 +109,6 @@
             min-width: 0;
         }
 
-        /* Top Header Search & Profile Developer */
         .top-header {
             display: flex;
             justify-content: space-between;
@@ -103,6 +116,7 @@
             gap: 20px;
         }
 
+        /* Kolom Pencarian Aktif */
         .search-bar {
             flex: 1;
             max-width: 500px;
@@ -113,7 +127,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
         .search-bar input { border: none; outline: none; width: 100%; font-size: 0.9rem; color: #334155; font-weight: 600; }
         .search-bar i { color: #94a3b8; }
@@ -127,7 +141,7 @@
             padding: 8px 18px 8px 10px;
             border-radius: 20px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
         .dev-avatar {
             width: 44px;
@@ -252,7 +266,7 @@
             background: #ffffff;
             border-radius: 28px;
             padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
             border: 1px solid #e2e8f0;
         }
 
@@ -380,6 +394,8 @@
 </head>
 <body>
 
+    <div class="bg-overlay"></div>
+
     <div class="dashboard-container">
         
         <!-- 1. SIDEBAR KIRI -->
@@ -389,16 +405,16 @@
             </div>
 
             <div class="menu-list">
-                <a href="#" class="menu-item active">
+                <a href="#dashboard" class="menu-item active" onclick="switchNav('dashboard', this)">
                     <i class="fa-solid fa-house"></i> Dashboard
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#game-section" class="menu-item" onclick="switchNav('game-section', this)">
                     <i class="fa-solid fa-flask"></i> Kuis Kimia
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#team-section" class="menu-item" onclick="switchNav('team-section', this)">
                     <i class="fa-solid fa-users"></i> Kelompok
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#tournament-section" class="menu-item" onclick="switchNav('tournament-section', this)">
                     <i class="fa-solid fa-trophy"></i> Turnamen
                 </a>
             </div>
@@ -411,13 +427,13 @@
         </div>
 
         <!-- 2. AREA UTAMA (TENGAH) -->
-        <div class="main-content">
+        <div class="main-content" id="dashboard">
             
             <!-- Top Header Search & Developer Section -->
             <div class="top-header">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Cari permainan kimia...">
+                    <input type="text" id="input-search" placeholder="Cari permainan kimia..." onkeyup="filterGame()">
                 </div>
 
                 <!-- Pengembang Game: R. Dunggio -->
@@ -443,16 +459,16 @@
             </div>
 
             <!-- Grid 5 Game Kimia -->
-            <div>
+            <div id="game-section">
                 <div class="section-header">
                     <div class="section-title">Daftar Permainan Kimia</div>
                 </div>
 
-                <div class="game-grid">
+                <div class="game-grid" id="game-grid">
                     
-                    <!-- GAME 1 -->
+                    <!-- GAME 1 (THUMBNAIL FORMAT .PNG) -->
                     <a href="game-camera.html" class="game-card">
-                        <div class="thumb-box"><img src="thumb-camera.jpg" alt="Interactive Camera"></div>
+                        <div class="thumb-box"><img src="thumb-camera.png" alt="Interactive Camera" onerror="this.src='thumb-camera.jpg'"></div>
                         <div class="game-title">📷 Interactive Camera</div>
                         <div class="game-category">Kuis Gerak Kamera</div>
                         <div class="btn-play-card">Mainkan <i class="fa-solid fa-play"></i></div>
@@ -460,7 +476,7 @@
 
                     <!-- GAME 2 -->
                     <a href="game-tugofwar.html" class="game-card">
-                        <div class="thumb-box"><img src="thumb-tugofwar.jpg" alt="Tug Of War"></div>
+                        <div class="thumb-box"><img src="thumb-tugofwar.png" alt="Tug Of War" onerror="this.src='thumb-tugofwar.jpg'"></div>
                         <div class="game-title">🏋️ Tug Of War</div>
                         <div class="game-category">Tarik Tambang</div>
                         <div class="btn-play-card">Mainkan <i class="fa-solid fa-play"></i></div>
@@ -468,7 +484,7 @@
 
                     <!-- GAME 3 -->
                     <a href="game-snakewar.html" class="game-card">
-                        <div class="thumb-box"><img src="thumb-snakewar.jpg" alt="Snake War"></div>
+                        <div class="thumb-box"><img src="thumb-snakewar.png" alt="Snake War" onerror="this.src='thumb-snakewar.jpg'"></div>
                         <div class="game-title">🐍 Snake War</div>
                         <div class="game-category">Ular Makan & Kuis</div>
                         <div class="btn-play-card">Mainkan <i class="fa-solid fa-play"></i></div>
@@ -476,7 +492,7 @@
 
                     <!-- GAME 4 -->
                     <a href="game-tenggetengge.html" class="game-card">
-                        <div class="thumb-box"><img src="thumb-tenggetengge.jpg" alt="Tengge-Tengge"></div>
+                        <div class="thumb-box"><img src="thumb-tenggetengge.png" alt="Tengge-Tengge" onerror="this.src='thumb-tenggetengge.jpg'"></div>
                         <div class="game-title">🧱 Tengge-Tengge 3D</div>
                         <div class="game-category">Engklek & Isian IFP</div>
                         <div class="btn-play-card">Mainkan <i class="fa-solid fa-play"></i></div>
@@ -484,7 +500,7 @@
 
                     <!-- GAME 5 -->
                     <a href="game-dragdrop.html" class="game-card">
-                        <div class="thumb-box"><img src="thumb-dragdrop.jpg" alt="Bohr Atom Drag & Drop"></div>
+                        <div class="thumb-box"><img src="thumb-dragdrop.png" alt="Bohr Atom Drag & Drop" onerror="this.src='thumb-dragdrop.jpg'"></div>
                         <div class="game-title">⚛️ Bohr Atom 3D</div>
                         <div class="game-category">Drag & Drop Model</div>
                         <div class="btn-play-card">Mainkan <i class="fa-solid fa-play"></i></div>
@@ -496,10 +512,10 @@
         </div>
 
         <!-- 3. PANEL KANAN (STATISTIK & KELOMPOK) -->
-        <div class="right-panel">
+        <div class="right-panel" id="team-section">
             
             <!-- Grafik Statistik Turnamen -->
-            <div class="panel-card">
+            <div class="panel-card" id="tournament-section">
                 <div class="section-title">Statistik Turnamen</div>
                 
                 <div class="chart-box">
@@ -561,6 +577,35 @@
         let scoreRed = 0;
         let scoreBlue = 0;
 
+        // 1. Fitur Pencarian Game Otomatis
+        function filterGame() {
+            let input = document.getElementById('input-search').value.toLowerCase();
+            let cards = document.querySelectorAll('.game-card');
+
+            cards.forEach(card => {
+                let title = card.querySelector('.game-title').innerText.toLowerCase();
+                let category = card.querySelector('.game-category').innerText.toLowerCase();
+
+                if (title.includes(input) || category.includes(input)) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+
+        // 2. Fitur Navigasi Menu Sidebar Aktif
+        function switchNav(targetId, elem) {
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            elem.classList.add('active');
+
+            let targetElem = document.getElementById(targetId);
+            if (targetElem) {
+                targetElem.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // 3. Update UI & Sinkronisasi Skor
         function updateDashboardUI() {
             scoreRed = parseInt(localStorage.getItem('aya_score_red')) || 0;
             scoreBlue = parseInt(localStorage.getItem('aya_score_blue')) || 0;
@@ -577,7 +622,6 @@
             document.getElementById('percent-red').innerText = percentRed + '%';
             document.getElementById('percent-blue').innerText = percentBlue + '%';
 
-            // Update Grafik Donut Gradient
             document.getElementById('chart-donut').style.background = 
                 `conic-gradient(#f43f5e 0% ${percentRed}%, #0284c7 ${percentRed}% 100%)`;
         }
