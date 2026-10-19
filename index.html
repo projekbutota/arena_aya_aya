@@ -700,51 +700,56 @@
             render();
         }
 
-        window.onload = updateDashboardUI;
-
+ <!-- 1. KODE CSS RESPANSIF (Wajib di dalam tag <style>) -->
+    <style>
         /* Pengaturan Khusus Layar HP & Tablet */
-@media (max-width: 1024px) {
-    body {
-        padding: 12px;
-    }
+        @media (max-width: 1024px) {
+            body {
+                padding: 12px;
+            }
 
-    .dashboard-container {
-        flex-direction: column;
-        gap: 16px;
-    }
+            .dashboard-container {
+                flex-direction: column;
+                gap: 16px;
+            }
 
-    .sidebar, .right-panel {
-        width: 100%;
-    }
+            .sidebar, .right-panel {
+                width: 100%;
+            }
 
-    .top-header {
-        flex-direction: column-reverse;
-        gap: 12px;
-    }
+            .top-header {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
 
-    .search-bar {
-        max-width: 100%;
-    }
+            .search-bar {
+                max-width: 100%;
+            }
 
-    .developer-profile {
-        width: 100%;
-        justify-content: center;
-    }
+            .developer-profile {
+                width: 100%;
+                justify-content: center;
+            }
 
-    .hero-banner {
-        padding: 20px;
-    }
+            .hero-banner {
+                padding: 20px;
+            }
 
-    .hero-icon-3d {
-        display: none; /* Sembunyikan ikon besar di HP biar hemat tempat */
-    }
+            .hero-icon-3d {
+                display: none;
+            }
 
-    .game-grid {
-        grid-template-columns: repeat(2, 1fr); /* Tampilan 2 kolom game di HP */
-        gap: 12px;
-    }
-}
-        
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+    </style>
+
+    <!-- 2. KODE JAVASCRIPT (Di dalam tag <script>) -->
+    <script>
+        window.onload = updateDashboardUI;
     </script>
+
 </body>
 </html>
