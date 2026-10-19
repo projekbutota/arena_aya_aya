@@ -704,3 +704,46 @@
     </script>
 </body>
 </html>
+
+/* Pengaturan Khusus Layar HP & Tablet */
+@media (max-width: 1024px) {
+    body {
+        padding: 12px;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .sidebar, .right-panel {
+        width: 100%;
+    }
+
+    .top-header {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+
+    .search-bar {
+        max-width: 100%;
+    }
+
+    .developer-profile {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hero-banner {
+        padding: 20px;
+    }
+
+    .hero-icon-3d {
+        display: none; /* Sembunyikan ikon besar di HP biar hemat tempat */
+    }
+
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr); /* Tampilan 2 kolom game di HP */
+        gap: 12px;
+    }
+}
