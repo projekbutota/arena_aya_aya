@@ -15,7 +15,7 @@
         body {
             background: url('bg-main.png') no-repeat center center fixed;
             background-size: cover;
-            background-color: #f0f4f9;
+            background-color: #0f172a;
             color: #1e293b;
             min-height: 100vh;
             padding: 20px;
@@ -23,11 +23,12 @@
             justify-content: center;
         }
 
+        /* OVERLAY LEBIH TRANSPARAN AGAR BACKGROUND VISIBEL */
         .bg-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(240, 244, 249, 0.88);
-            backdrop-filter: blur(6px);
+            background: rgba(240, 244, 249, 0.35);
+            backdrop-filter: blur(2px);
             z-index: -1;
         }
 
@@ -43,14 +44,15 @@
         /* SIDEBAR KIRI */
         .sidebar {
             width: 240px;
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
             border-radius: 24px;
             padding: 24px 18px;
             display: flex;
             flex-direction: column;
             gap: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             flex-shrink: 0;
         }
 
@@ -75,19 +77,19 @@
             gap: 12px;
             padding: 12px 16px;
             border-radius: 14px;
-            color: #64748b;
+            color: #475569;
             font-weight: 700;
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s;
             text-decoration: none;
         }
-        .menu-item:hover { background: #f8fafc; color: #0284c7; }
+        .menu-item:hover { background: #f1f5f9; color: #0284c7; }
         .menu-item.active { background: #e0f2fe; color: #0284c7; }
 
         .sidebar-card {
             margin-top: auto;
-            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            background: linear-gradient(135deg, rgba(224, 242, 254, 0.9), rgba(186, 230, 253, 0.9));
             border-radius: 18px;
             padding: 16px;
             text-align: center;
@@ -116,27 +118,27 @@
         .search-bar {
             flex: 1;
             max-width: 500px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(226, 232, 240, 0.8);
             padding: 10px 18px;
             border-radius: 18px;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
         }
-        .search-bar input { border: none; outline: none; width: 100%; font-size: 0.9rem; color: #334155; font-weight: 600; }
-        .search-bar i { color: #94a3b8; }
+        .search-bar input { border: none; outline: none; width: 100%; font-size: 0.9rem; color: #334155; font-weight: 600; background: transparent; }
+        .search-bar i { color: #0284c7; }
 
         .developer-profile {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.92);
             padding: 8px 16px 8px 10px;
             border-radius: 18px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
         }
         .dev-avatar {
             width: 40px;
@@ -155,7 +157,7 @@
         .dev-role { font-size: 0.75rem; font-weight: 600; color: #64748b; margin-top: 2px; }
 
         .hero-banner {
-            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%);
             border-radius: 24px;
             padding: 28px 32px;
             color: white;
@@ -164,15 +166,15 @@
             align-items: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
         }
         .hero-text { max-width: 500px; z-index: 2; }
         .hero-text h1 { font-family: 'Luckiest Guy', cursive; font-size: 2rem; letter-spacing: 1px; margin-bottom: 6px; }
-        .hero-text p { font-size: 0.9rem; opacity: 0.92; line-height: 1.4; font-weight: 500; }
+        .hero-text p { font-size: 0.9rem; opacity: 0.95; line-height: 1.4; font-weight: 500; }
         
         .hero-badge {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(10px);
             padding: 4px 14px;
             border-radius: 30px;
@@ -195,20 +197,21 @@
         }
 
         .game-card {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 12px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.8);
             text-decoration: none;
             color: inherit;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
         }
         .game-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(2, 132, 199, 0.12);
+            box-shadow: 0 12px 25px rgba(2, 132, 199, 0.2);
             border-color: #38bdf8;
         }
 
@@ -243,7 +246,7 @@
 
         /* PANEL KANAN */
         .right-panel {
-            width: 300px;
+            width: 310px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -251,26 +254,30 @@
         }
 
         .panel-card {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
             border-radius: 24px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
+        /* CHART & KONTROL REGISTRASI SISWA */
         .chart-box { display: flex; flex-direction: column; align-items: center; margin: 12px 0; }
         .donut-chart {
-            width: 140px;
-            height: 140px;
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
             background: conic-gradient(#f43f5e 0% 50%, #0284c7 50% 100%);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: background 0.3s ease;
         }
         .donut-inner {
-            width: 96px;
-            height: 96px;
+            width: 90px;
+            height: 90px;
             background: #ffffff;
             border-radius: 50%;
             display: flex;
@@ -279,30 +286,83 @@
             justify-content: center;
         }
         .donut-number { font-size: 1.3rem; font-weight: 900; color: #0f172a; }
-        .donut-label { font-size: 0.7rem; color: #64748b; font-weight: 700; }
+        .donut-label { font-size: 0.68rem; color: #64748b; font-weight: 700; }
 
-        .legend-grid { display: flex; justify-content: space-around; width: 100%; margin-top: 8px; }
-        .legend-item { font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-        .dot-red { width: 10px; height: 10px; background: #f43f5e; border-radius: 50%; }
-        .dot-blue { width: 10px; height: 10px; background: #0284c7; border-radius: 50%; }
+        .student-select-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
 
-        .score-control-box { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-
-        .team-score-btn {
+        .btn-student-count {
             border: none;
-            padding: 12px 16px;
-            border-radius: 16px;
+            padding: 10px 8px;
+            border-radius: 14px;
+            color: white;
             font-weight: 800;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: transform 0.1s;
+        }
+        .btn-student-count:active { transform: scale(0.95); }
+        .btn-student-red { background: linear-gradient(135deg, #f43f5e, #be123c); }
+        .btn-student-blue { background: linear-gradient(135deg, #0284c7, #0369a1); }
+
+        .btn-counter-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .btn-mini-adjust {
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* PAPAN SKOR AUTOMATIS + MANUAL */
+        .score-board-display {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-top: 10px;
         }
-        .btn-team-red { background: linear-gradient(135deg, #f43f5e, #be123c); }
-        .btn-team-blue { background: linear-gradient(135deg, #0284c7, #0369a1); }
-        .badge-count { background: rgba(255, 255, 255, 0.25); padding: 4px 10px; border-radius: 16px; font-size: 0.85rem; }
+        .score-team-box { text-align: center; }
+        .score-val { font-size: 1.6rem; font-weight: 900; line-height: 1; margin-top: 4px; }
+        .val-red { color: #f43f5e; }
+        .val-blue { color: #0284c7; }
+        .score-vs { font-weight: 900; color: #94a3b8; font-size: 0.9rem; }
+
+        .manual-score-adjust {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .btn-score-mod {
+            flex: 1;
+            padding: 8px;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            font-weight: 800;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
 
         .btn-action-main {
             width: 100%;
@@ -317,7 +377,7 @@
             justify-content: center;
             gap: 6px;
         }
-        .btn-trophy-announce { background: #eab308; color: #451a03; margin-top: 10px; }
+        .btn-trophy-announce { background: #eab308; color: #451a03; margin-top: 12px; }
         .btn-reset-scores { background: #f1f5f9; color: #64748b; margin-top: 6px; }
 
         /* MODAL TROPHY */
@@ -355,26 +415,20 @@
         .winner-desc { font-size: 0.9rem; color: #64748b; font-weight: 700; margin-bottom: 20px; }
         .btn-modal-close { background: #22c55e; color: white; border: none; padding: 10px 24px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
 
-        /* ====================================================
-           ATURAN KHUSUS RESPONSISTAS UNTUK LAYAR HP & TABLET
-           ==================================================== */
+        /* RESPONSIVITY HP & TABLET */
         @media screen and (max-width: 1024px) {
             body { padding: 12px; }
             .dashboard-container { flex-direction: column; gap: 16px; }
             .sidebar, .right-panel, .main-content { width: 100% !important; max-width: 100% !important; }
-            
             .sidebar { padding: 16px; border-radius: 20px; }
-            .sidebar-card { display: none; } /* Hemat ruang di HP */
-            
+            .sidebar-card { display: none; }
             .top-header { flex-direction: column-reverse; gap: 12px; }
             .search-bar { width: 100%; max-width: 100%; }
             .developer-profile { width: 100%; justify-content: center; }
-
             .hero-banner { padding: 20px; border-radius: 20px; }
             .hero-text h1 { font-size: 1.5rem; }
             .hero-text p { font-size: 0.82rem; }
             .hero-icon-3d { display: none; }
-
             .game-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .thumb-box { height: 100px; }
             .game-title { font-size: 0.85rem; }
@@ -393,31 +447,31 @@
 
     <div class="dashboard-container">
         
-        <!-- SIDEBAR KIRI -->
+        <!-- SIDEBAR KIRI (INTERAKTIF & AKTIF) -->
         <div class="sidebar">
             <div class="logo-brand">
                 <i class="fa-solid fa-gamepad"></i> ARENA AYA AYA
             </div>
 
             <div class="menu-list">
-                <a href="#dashboard" class="menu-item active" onclick="switchNav('dashboard', this)">
+                <div class="menu-item active" id="nav-dashboard" onclick="navigasiKe('dashboard')">
                     <i class="fa-solid fa-house"></i> Dashboard
-                </a>
-                <a href="#game-section" class="menu-item" onclick="switchNav('game-section', this)">
+                </div>
+                <div class="menu-item" id="nav-kuis" onclick="navigasiKe('kuis')">
                     <i class="fa-solid fa-flask"></i> Kuis Kimia
-                </a>
-                <a href="#team-section" class="menu-item" onclick="switchNav('team-section', this)">
-                    <i class="fa-solid fa-users"></i> Kelompok
-                </a>
-                <a href="#tournament-section" class="menu-item" onclick="switchNav('tournament-section', this)">
-                    <i class="fa-solid fa-trophy"></i> Turnamen
-                </a>
+                </div>
+                <div class="menu-item" id="nav-kelompok" onclick="navigasiKe('kelompok')">
+                    <i class="fa-solid fa-users"></i> Registrasi Kelompok
+                </div>
+                <div class="menu-item" id="nav-turnamen" onclick="navigasiKe('turnamen')">
+                    <i class="fa-solid fa-trophy"></i> Turnamen & Skor
+                </div>
             </div>
 
             <div class="sidebar-card">
                 <i class="fa-solid fa-chalkboard-user"></i>
                 <h4>Mode Kelas IFP</h4>
-                <p>Optimal untuk Interactive Flat Panel</p>
+                <p>Optimal untuk Layar Sentuh Interaktif</p>
             </div>
         </div>
 
@@ -425,9 +479,10 @@
         <div class="main-content" id="dashboard">
             
             <div class="top-header">
+                <!-- PENCARIAN ELEMEN / GAME -->
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="input-search" placeholder="Cari permainan kimia..." onkeyup="filterGame()">
+                    <input type="text" id="input-search" placeholder="Cari kuis atau materi kimia..." oninput="filterGame()">
                 </div>
 
                 <div class="developer-profile">
@@ -453,7 +508,7 @@
             <!-- GRID GAME -->
             <div id="game-section">
                 <div class="section-header">
-                    <div class="section-title">Daftar Permainan Kimia</div>
+                    <div class="section-title" id="game-section-title">Daftar Permainan Kimia</div>
                 </div>
 
                 <div class="game-grid" id="game-grid">
@@ -499,47 +554,69 @@
         </div>
 
         <!-- PANEL KANAN -->
-        <div class="right-panel" id="team-section">
+        <div class="right-panel">
             
-            <div class="panel-card" id="tournament-section">
-                <div class="section-title">Statistik Turnamen</div>
+            <!-- PANEL 1: REGISTRASI & PERSENTASE ANGGOTA KELOMPOK SISWA -->
+            <div class="panel-card" id="team-section">
+                <div class="section-title">Pilih Kelompok (Siswa)</div>
                 
                 <div class="chart-box">
                     <div class="donut-chart" id="chart-donut">
                         <div class="donut-inner">
-                            <div class="donut-number" id="total-score-val">0</div>
-                            <div class="donut-label">Total Poin</div>
+                            <div class="donut-number" id="total-students-val">0</div>
+                            <div class="donut-label">Total Siswa</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="legend-grid">
-                    <div class="legend-item"><div class="dot-red"></div> Merah: <span id="percent-red">50%</span></div>
-                    <div class="legend-item"><div class="dot-blue"></div> Biru: <span id="percent-blue">50%</span></div>
+                <div class="student-select-grid">
+                    <div class="btn-student-count btn-student-red">
+                        <span>🔴 Merah</span>
+                        <span style="font-size:1.1rem;" id="count-students-red">0 Siswa</span>
+                        <div class="btn-counter-actions">
+                            <button class="btn-mini-adjust" onclick="ubahSiswa('red', 1)">+</button>
+                            <button class="btn-mini-adjust" onclick="ubahSiswa('red', -1)">-</button>
+                        </div>
+                    </div>
+
+                    <div class="btn-student-count btn-student-blue">
+                        <span>🔵 Biru</span>
+                        <span style="font-size:1.1rem;" id="count-students-blue">0 Siswa</span>
+                        <div class="btn-counter-actions">
+                            <button class="btn-mini-adjust" onclick="ubahSiswa('blue', 1)">+</button>
+                            <button class="btn-mini-adjust" onclick="ubahSiswa('blue', -1)">-</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="panel-card">
-                <div class="section-title">Poin Kelompok</div>
+            <!-- PANEL 2: PAPAN SKOR TURNAMEN (OTOMATIS SINKRON) -->
+            <div class="panel-card" id="score-section">
+                <div class="section-title">Papan Skor Turnamen</div>
                 
-                <div class="score-control-box">
-                    <button class="team-score-btn btn-team-red" onclick="tambahPoin('red')">
-                        <span>🔴 Kelompok Merah</span>
-                        <span class="badge-count" id="score-red-btn">0</span>
-                    </button>
+                <div class="score-board-display">
+                    <div class="score-team-box">
+                        <span style="font-size:0.75rem; font-weight:800; color:#f43f5e;">🔴 MERAH</span>
+                        <div class="score-val val-red" id="score-red-val">0</div>
+                    </div>
+                    <div class="score-vs">VS</div>
+                    <div class="score-team-box">
+                        <span style="font-size:0.75rem; font-weight:800; color:#0284c7;">🔵 BIRU</span>
+                        <div class="score-val val-blue" id="score-blue-val">0</div>
+                    </div>
+                </div>
 
-                    <button class="team-score-btn btn-team-blue" onclick="tambahPoin('blue')">
-                        <span>🔵 Kelompok Biru</span>
-                        <span class="badge-count" id="score-blue-btn">0</span>
-                    </button>
+                <div class="manual-score-adjust">
+                    <button class="btn-score-mod btn-student-red" onclick="tambahSkorManual('red', 50)">+50 Merah</button>
+                    <button class="btn-score-mod btn-student-blue" onclick="tambahSkorManual('blue', 50)">+50 Biru</button>
                 </div>
 
                 <button class="btn-action-main btn-trophy-announce" onclick="umumkanPemenang()">
                     <i class="fa-solid fa-trophy"></i> Umumkan Pemenang
                 </button>
 
-                <button class="btn-action-main btn-reset-scores" onclick="resetSkorTurnamen()">
-                    <i class="fa-solid fa-rotate"></i> Reset Skor
+                <button class="btn-action-main btn-reset-scores" onclick="resetSemuaData()">
+                    <i class="fa-solid fa-rotate"></i> Reset Turnamen
                 </button>
             </div>
 
@@ -559,9 +636,12 @@
     </div>
 
     <script>
-        let scoreRed = 0;
-        let scoreBlue = 0;
+        let studentsRed = parseInt(localStorage.getItem('aya_students_red')) || 0;
+        let studentsBlue = parseInt(localStorage.getItem('aya_students_blue')) || 0;
+        let scoreRed = parseInt(localStorage.getItem('aya_score_red')) || 0;
+        let scoreBlue = parseInt(localStorage.getItem('aya_score_blue')) || 0;
 
+        // 1. CARI GAME
         function filterGame() {
             let input = document.getElementById('input-search').value.toLowerCase();
             let cards = document.querySelectorAll('.game-card');
@@ -578,49 +658,85 @@
             });
         }
 
-        function switchNav(targetId, elem) {
+        // 2. NAVIGASI SIDEBAR UTAMA
+        function navigasiKe(tujuan) {
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            elem.classList.add('active');
-
-            let targetElem = document.getElementById(targetId);
-            if (targetElem) {
-                targetElem.scrollIntoView({ behavior: 'smooth' });
+            
+            if (tujuan === 'dashboard') {
+                document.getElementById('nav-dashboard').classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById('input-search').value = '';
+                filterGame();
+            } 
+            else if (tujuan === 'kuis') {
+                document.getElementById('nav-kuis').classList.add('active');
+                document.getElementById('game-section').scrollIntoView({ behavior: 'smooth' });
+            } 
+            else if (tujuan === 'kelompok') {
+                document.getElementById('nav-kelompok').classList.add('active');
+                document.getElementById('team-section').scrollIntoView({ behavior: 'smooth' });
+            } 
+            else if (tujuan === 'turnamen') {
+                document.getElementById('nav-turnamen').classList.add('active');
+                document.getElementById('score-section').scrollIntoView({ behavior: 'smooth' });
             }
         }
 
-        function updateDashboardUI() {
-            scoreRed = parseInt(localStorage.getItem('aya_score_red')) || 0;
-            scoreBlue = parseInt(localStorage.getItem('aya_score_blue')) || 0;
-
-            document.getElementById('score-red-btn').innerText = scoreRed;
-            document.getElementById('score-blue-btn').innerText = scoreBlue;
-
-            let total = scoreRed + scoreBlue;
-            document.getElementById('total-score-val').innerText = total;
-
-            let percentRed = total === 0 ? 50 : Math.round((scoreRed / total) * 100);
-            let percentBlue = total === 0 ? 50 : 100 - percentRed;
-
-            document.getElementById('percent-red').innerText = percentRed + '%';
-            document.getElementById('percent-blue').innerText = percentBlue + '%';
-
-            document.getElementById('chart-donut').style.background = 
-                `conic-gradient(#f43f5e 0% ${percentRed}%, #0284c7 ${percentRed}% 100%)`;
+        // 3. PENGATURAN SISWA (REGISTRASI SISWA)
+        function ubahSiswa(team, val) {
+            if (team === 'red') {
+                studentsRed = Math.max(0, studentsRed + val);
+                localStorage.setItem('aya_students_red', studentsRed);
+            } else {
+                studentsBlue = Math.max(0, studentsBlue + val);
+                localStorage.setItem('aya_students_blue', studentsBlue);
+            }
+            updateDashboardUI();
         }
 
-        function tambahPoin(team) {
+        // 4. PENAMBAHAN SKOR MANUAL
+        function tambahSkorManual(team, val) {
             if (team === 'red') {
-                scoreRed += 50;
+                scoreRed += val;
                 localStorage.setItem('aya_score_red', scoreRed);
             } else {
-                scoreBlue += 50;
+                scoreBlue += val;
                 localStorage.setItem('aya_score_blue', scoreBlue);
             }
             updateDashboardUI();
         }
 
-        function resetSkorTurnamen() {
-            if (confirm("Reset seluruh skor turnamen ARENA AYA AYA?")) {
+        // 5. REFRESH UI & SINKRONISASI OTOMATIS SKOR DARI GAME
+        function updateDashboardUI() {
+            studentsRed = parseInt(localStorage.getItem('aya_students_red')) || 0;
+            studentsBlue = parseInt(localStorage.getItem('aya_students_blue')) || 0;
+            scoreRed = parseInt(localStorage.getItem('aya_score_red')) || 0;
+            scoreBlue = parseInt(localStorage.getItem('aya_score_blue')) || 0;
+
+            // Update Jumlah Siswa
+            document.getElementById('count-students-red').innerText = studentsRed + ' Siswa';
+            document.getElementById('count-students-blue').innerText = studentsBlue + ' Siswa';
+
+            let totalStudents = studentsRed + studentsBlue;
+            document.getElementById('total-students-val').innerText = totalStudents;
+
+            let percentRed = totalStudents === 0 ? 50 : Math.round((studentsRed / totalStudents) * 100);
+            document.getElementById('chart-donut').style.background = 
+                `conic-gradient(#f43f5e 0% ${percentRed}%, #0284c7 ${percentRed}% 100%)`;
+
+            // Update Papan Skor
+            document.getElementById('score-red-val').innerText = scoreRed;
+            document.getElementById('score-blue-val').innerText = scoreBlue;
+        }
+
+        // MENDENGARKAN PERUBAHAN SKOR OTOMATIS DARI GAME LAIN SAAAT DIMAINKAN
+        window.addEventListener('storage', updateDashboardUI);
+        setInterval(updateDashboardUI, 1000); // Sinkronisasi setiap detik saat kembali ke tab
+
+        function resetSemuaData() {
+            if (confirm("Reset seluruh data siswa dan skor turnamen ARENA AYA AYA?")) {
+                localStorage.setItem('aya_students_red', 0);
+                localStorage.setItem('aya_students_blue', 0);
                 localStorage.setItem('aya_score_red', 0);
                 localStorage.setItem('aya_score_blue', 0);
                 updateDashboardUI();
