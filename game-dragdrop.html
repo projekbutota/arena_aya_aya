@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Bohr Atom 3D Dual Constructor - Kids & Kimia Gemoy Edition</title>
 
     <!-- Tailwind CSS CDN -->
@@ -91,113 +91,113 @@
 <body class="flex flex-col h-screen w-screen overflow-hidden">
 
     <!-- HEADER BAR BAR -->
-    <header class="h-[7vh] min-h-[45px] bg-slate-900/95 border-b border-slate-700/80 px-4 flex justify-between items-center z-30 shadow-lg">
+    <header class="h-[7vh] min-h-[45px] max-h-[55px] bg-slate-900/95 border-b border-slate-700/80 px-4 flex justify-between items-center z-30 shadow-lg shrink-0">
         <div class="flex items-center gap-3">
-            <span class="text-2xl">⚛️</span>
-            <h1 class="font-['Luckiest_Guy'] text-lg md:text-xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-amber-300">
+            <span class="text-xl md:text-2xl">⚛️</span>
+            <h1 class="font-['Luckiest_Guy'] text-base md:text-xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-amber-300">
                 BOHR ATOM 3D DUO CONSTRUCTOR
             </h1>
         </div>
 
-        <div class="flex items-center gap-3">
-            <div class="bg-slate-800/90 border-2 border-amber-400 px-4 py-1 rounded-2xl flex items-center gap-3">
-                <div class="text-rose-400 font-['Luckiest_Guy'] text-sm md:text-base">🔴 MERAH: <span id="score-red">0</span></div>
+        <div class="flex items-center gap-2 md:gap-3">
+            <div class="bg-slate-800/90 border-2 border-amber-400 px-3 py-1 rounded-2xl flex items-center gap-2 md:gap-3">
+                <div class="text-rose-400 font-['Luckiest_Guy'] text-xs md:text-base">🔴 MERAH: <span id="score-red">0</span></div>
                 <div class="text-slate-500 font-bold">|</div>
-                <div class="text-sky-400 font-['Luckiest_Guy'] text-sm md:text-base">🔵 BIRU: <span id="score-blue">0</span></div>
+                <div class="text-sky-400 font-['Luckiest_Guy'] text-xs md:text-base">🔵 BIRU: <span id="score-blue">0</span></div>
             </div>
 
-            <button onclick="toggleAudio()" id="btn-audio" class="btn-gemoy bg-slate-700 text-amber-300 border border-slate-500 px-3 py-1 rounded-xl text-xs">
+            <button onclick="toggleAudio()" id="btn-audio" class="btn-gemoy bg-slate-700 text-amber-300 border border-slate-500 px-2.5 py-1 rounded-xl text-xs">
                 🔊 SUARA
             </button>
-            <button onclick="resetWholeGame()" class="btn-gemoy bg-rose-600 text-white border border-rose-300 px-3 py-1 rounded-xl text-xs flex items-center gap-1">
+            <button onclick="resetWholeGame()" class="btn-gemoy bg-rose-600 text-white border border-rose-300 px-2.5 py-1 rounded-xl text-xs flex items-center gap-1">
                 <i class="fas fa-rotate"></i> RESET
             </button>
         </div>
     </header>
 
-    <!-- DUAL PLAYER STAGE 50:50 -->
-    <main class="flex-1 flex flex-col md:flex-row w-full h-[93vh] relative overflow-hidden bg-slate-950">
+    <!-- DUAL PLAYER STAGE 50:50 (FORCE FLEX-ROW FOR IFP LANDSCAPE) -->
+    <main class="flex-1 flex flex-row w-full h-[93vh] min-h-0 relative overflow-hidden bg-slate-950">
         
         <!-- ========================================== -->
         <!-- SISI KIRI: TIM MERAH 🔴 -->
         <!-- ========================================== -->
-        <section class="w-full md:w-1/2 h-1/2 md:h-full p-2 flex flex-col gap-2 border-b-4 md:border-b-0 md:border-r-4 border-rose-500/40 relative">
+        <section class="w-1/2 h-full p-2 flex flex-col gap-2 border-r-2 md:border-r-4 border-rose-500/40 relative min-h-0">
             
-            <!-- RINGKASAN TARGET UNSUR (TANPA DESKRIPSI TEKS PANDUAN) -->
-            <div class="glass-panel glow-red rounded-xl px-3 py-1.5 flex justify-between items-center">
+            <!-- RINGKASAN TARGET UNSUR -->
+            <div class="glass-panel glow-red rounded-xl px-3 py-1.5 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-2">
-                    <span class="bg-rose-600 text-white px-2.5 py-0.5 rounded-full text-xs font-['Luckiest_Guy']">
-                        🔴 MERAH <span id="tag-red-level" class="text-amber-300 ml-1">(1/5)</span>
+                    <span class="bg-rose-600 text-white px-2 py-0.5 rounded-full text-[11px] md:text-xs font-['Luckiest_Guy']">
+                        🔴 MERAH <span id="tag-red-level" class="text-amber-300 ml-0.5">(1/5)</span>
                     </span>
-                    <h3 class="text-amber-300 font-bold text-sm" id="red-title">Target: Atom Litium</h3>
+                    <h3 class="text-amber-300 font-bold text-xs md:text-sm truncate" id="red-title">Target: Atom Litium</h3>
                 </div>
-                <div class="text-sm font-mono font-bold text-cyan-300 bg-slate-900 px-3 py-0.5 rounded-lg border border-rose-500/40" id="red-target-formula">
+                <div class="text-xs md:text-sm font-mono font-bold text-cyan-300 bg-slate-900 px-2.5 py-0.5 rounded-lg border border-rose-500/40" id="red-target-formula">
                     ⁷₃Li
                 </div>
             </div>
 
             <!-- AREA KANVAS 3D LUAS DAN LAPANG -->
-            <div class="flex-1 relative rounded-2xl overflow-hidden border-2 border-rose-500/30 bg-slate-900/50 flex flex-col">
+            <div class="flex-1 min-h-0 relative rounded-2xl overflow-hidden border-2 border-rose-500/30 bg-slate-900/50 flex flex-col">
                 <canvas id="canvas-red" class="atom-canvas"></canvas>
                 
-                <div class="absolute top-2 left-2 flex gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700 backdrop-blur-md">
-                    <button onclick="setCameraPreset('RED', 'ISO')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">3D Iso</button>
-                    <button onclick="setCameraPreset('RED', 'TOP')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Atas</button>
-                    <button onclick="setCameraPreset('RED', 'FRONT')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Depan</button>
+                <div class="absolute top-2 left-2 flex gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700 backdrop-blur-md z-10">
+                    <button onclick="setCameraPreset('RED', 'ISO')" class="btn-gemoy bg-slate-800 text-[10px] md:text-xs px-2 py-0.5 rounded-lg text-slate-200 border border-slate-600">3D Iso</button>
+                    <button onclick="setCameraPreset('RED', 'TOP')" class="btn-gemoy bg-slate-800 text-[10px] md:text-xs px-2 py-0.5 rounded-lg text-slate-200 border border-slate-600">Atas</button>
+                    <button onclick="setCameraPreset('RED', 'FRONT')" class="btn-gemoy bg-slate-800 text-[10px] md:text-xs px-2 py-0.5 rounded-lg text-slate-200 border border-slate-600">Depan</button>
                 </div>
 
-                <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 px-3 py-1 rounded-xl border border-slate-700/80 backdrop-blur-md flex items-center justify-between text-xs text-slate-300">
-                    <span><i class="fas fa-arrows-rotate text-amber-400"></i> Geser kanvas untuk rotasi 3D</span>
+                <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 px-3 py-1 rounded-xl border border-slate-700/80 backdrop-blur-md flex items-center justify-between text-[11px] md:text-xs text-slate-300 z-10">
+                    <span class="hidden md:inline"><i class="fas fa-arrows-rotate text-amber-400"></i> Rotasi 3D</span>
                     <span id="red-particle-summary" class="font-bold text-cyan-300">Inti: 0p, 0n | e-: K0, L0, M0, N0</span>
                 </div>
             </div>
 
             <!-- PANEL KONTROL PARTIKEL & DRAG -->
-            <div class="glass-panel rounded-xl p-2 flex flex-col gap-1.5">
-                <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="glass-panel rounded-xl p-2 flex flex-col gap-1.5 shrink-0">
+                <div class="grid grid-cols-3 gap-1.5 md:gap-2 text-center">
                     <!-- Proton -->
-                    <div class="bg-rose-950/60 p-1.5 rounded-xl border border-rose-500/40 flex flex-col items-center">
-                        <span class="text-xs font-bold text-rose-300">Proton (p⁺)</span>
-                        <div class="flex items-center gap-1 my-1">
-                            <button onclick="adjustParticle('RED', 'p', -1)" class="w-7 h-7 rounded-lg bg-rose-800 text-white font-bold text-sm hover:bg-rose-700">-</button>
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-600 to-amber-500 border-2 border-white flex items-center justify-center font-bold text-sm text-white shadow-md cursor-grab"
+                    <div class="bg-rose-950/60 p-1 md:p-1.5 rounded-xl border border-rose-500/40 flex flex-col items-center">
+                        <span class="text-[10px] md:text-xs font-bold text-rose-300">Proton (p⁺)</span>
+                        <div class="flex items-center gap-1 my-0.5 md:my-1">
+                            <button onclick="adjustParticle('RED', 'p', -1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-rose-800 text-white font-bold text-xs md:text-sm hover:bg-rose-700">-</button>
+                            <div class="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-rose-600 to-amber-500 border-2 border-white flex items-center justify-center font-bold text-xs md:text-sm text-white shadow-md cursor-grab"
                                  onpointerdown="startParticleDrag(event, 'RED', 'p')">
                                 <span id="count-red-p">0</span>
                             </div>
-                            <button onclick="adjustParticle('RED', 'p', 1)" class="w-7 h-7 rounded-lg bg-rose-600 text-white font-bold text-sm hover:bg-rose-500">+</button>
+                            <button onclick="adjustParticle('RED', 'p', 1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-rose-600 text-white font-bold text-xs md:text-sm hover:bg-rose-500">+</button>
                         </div>
                     </div>
 
                     <!-- Neutron -->
-                    <div class="bg-slate-800/60 p-1.5 rounded-xl border border-slate-500/40 flex flex-col items-center">
-                        <span class="text-xs font-bold text-slate-300">Neutron (n⁰)</span>
-                        <div class="flex items-center gap-1 my-1">
-                            <button onclick="adjustParticle('RED', 'n', -1)" class="w-7 h-7 rounded-lg bg-slate-700 text-white font-bold text-sm hover:bg-slate-600">-</button>
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 border-2 border-white flex items-center justify-center font-bold text-sm text-slate-900 shadow-md cursor-grab"
+                    <div class="bg-slate-800/60 p-1 md:p-1.5 rounded-xl border border-slate-500/40 flex flex-col items-center">
+                        <span class="text-[10px] md:text-xs font-bold text-slate-300">Neutron (n⁰)</span>
+                        <div class="flex items-center gap-1 my-0.5 md:my-1">
+                            <button onclick="adjustParticle('RED', 'n', -1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-slate-700 text-white font-bold text-xs md:text-sm hover:bg-slate-600">-</button>
+                            <div class="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 border-2 border-white flex items-center justify-center font-bold text-xs md:text-sm text-slate-900 shadow-md cursor-grab"
                                  onpointerdown="startParticleDrag(event, 'RED', 'n')">
                                 <span id="count-red-n">0</span>
                             </div>
-                            <button onclick="adjustParticle('RED', 'n', 1)" class="w-7 h-7 rounded-lg bg-slate-500 text-white font-bold text-sm hover:bg-slate-400">+</button>
+                            <button onclick="adjustParticle('RED', 'n', 1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-slate-500 text-white font-bold text-xs md:text-sm hover:bg-slate-400">+</button>
                         </div>
                     </div>
 
                     <!-- Electron Shell Selector -->
-                    <div class="bg-sky-950/60 p-1.5 rounded-xl border border-sky-500/40 flex flex-col items-center justify-center">
-                        <span class="text-xs font-bold text-cyan-300 mb-1">Tambah Elektron (e⁻)</span>
-                        <div class="flex items-center justify-center gap-1 flex-wrap">
-                            <button onclick="adjustShell('RED', 'K', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+K</button>
-                            <button onclick="adjustShell('RED', 'L', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+L</button>
-                            <button onclick="adjustShell('RED', 'M', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+M</button>
-                            <button onclick="adjustShell('RED', 'N', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+N</button>
+                    <div class="bg-sky-950/60 p-1 md:p-1.5 rounded-xl border border-sky-500/40 flex flex-col items-center justify-center">
+                        <span class="text-[10px] md:text-xs font-bold text-cyan-300 mb-0.5">Elektron (e⁻)</span>
+                        <div class="flex items-center justify-center gap-0.5 md:gap-1 flex-wrap">
+                            <button onclick="adjustShell('RED', 'K', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+K</button>
+                            <button onclick="adjustShell('RED', 'L', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+L</button>
+                            <button onclick="adjustShell('RED', 'M', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+M</button>
+                            <button onclick="adjustShell('RED', 'N', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+N</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex gap-2">
-                    <button onclick="clearTeamAtom('RED')" class="btn-gemoy bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-500 px-3 py-1.5 rounded-xl text-xs flex-1">
+                    <button onclick="clearTeamAtom('RED')" class="btn-gemoy bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-500 px-2 md:px-3 py-1 rounded-xl text-xs flex-1">
                         <i class="fas fa-trash"></i> Reset
                     </button>
-                    <button onclick="verifyTeamModel('RED')" class="btn-gemoy bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-500 text-white border-2 border-white px-4 py-1.5 rounded-xl text-sm font-bold flex-[2]">
+                    <button onclick="verifyTeamModel('RED')" class="btn-gemoy bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-500 text-white border-2 border-white px-3 md:px-4 py-1 rounded-xl text-xs md:text-sm font-bold flex-[2]">
                         <i class="fas fa-check-circle"></i> UJI MODEL ATOM 🔴
                     </button>
                 </div>
@@ -209,83 +209,83 @@
         <!-- ========================================== -->
         <!-- SISI KANAN: TIM BIRU 🔵 -->
         <!-- ========================================== -->
-        <section class="w-full md:w-1/2 h-1/2 md:h-full p-2 flex flex-col gap-2 relative">
+        <section class="w-1/2 h-full p-2 flex flex-col gap-2 relative min-h-0">
             
-            <!-- RINGKASAN TARGET UNSUR (TANPA DESKRIPSI TEKS PANDUAN) -->
-            <div class="glass-panel glow-blue rounded-xl px-3 py-1.5 flex justify-between items-center">
+            <!-- RINGKASAN TARGET UNSUR -->
+            <div class="glass-panel glow-blue rounded-xl px-3 py-1.5 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-2">
-                    <span class="bg-sky-600 text-white px-2.5 py-0.5 rounded-full text-xs font-['Luckiest_Guy']">
-                        🔵 BIRU <span id="tag-blue-level" class="text-amber-300 ml-1">(1/5)</span>
+                    <span class="bg-sky-600 text-white px-2 py-0.5 rounded-full text-[11px] md:text-xs font-['Luckiest_Guy']">
+                        🔵 BIRU <span id="tag-blue-level" class="text-amber-300 ml-0.5">(1/5)</span>
                     </span>
-                    <h3 class="text-amber-300 font-bold text-sm" id="blue-title">Target: Ion Magnesium</h3>
+                    <h3 class="text-amber-300 font-bold text-xs md:text-sm truncate" id="blue-title">Target: Ion Magnesium</h3>
                 </div>
-                <div class="text-sm font-mono font-bold text-cyan-300 bg-slate-900 px-3 py-0.5 rounded-lg border border-sky-500/40" id="blue-target-formula">
+                <div class="text-xs md:text-sm font-mono font-bold text-cyan-300 bg-slate-900 px-2.5 py-0.5 rounded-lg border border-sky-500/40" id="blue-target-formula">
                     ²⁴₁₂Mg²⁺
                 </div>
             </div>
 
             <!-- AREA KANVAS 3D LUAS DAN LAPANG -->
-            <div class="flex-1 relative rounded-2xl overflow-hidden border-2 border-sky-500/30 bg-slate-900/50 flex flex-col">
+            <div class="flex-1 min-h-0 relative rounded-2xl overflow-hidden border-2 border-sky-500/30 bg-slate-900/50 flex flex-col">
                 <canvas id="canvas-blue" class="atom-canvas"></canvas>
                 
-                <div class="absolute top-2 left-2 flex gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700 backdrop-blur-md">
-                    <button onclick="setCameraPreset('BLUE', 'ISO')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">3D Iso</button>
-                    <button onclick="setCameraPreset('BLUE', 'TOP')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Atas</button>
-                    <button onclick="setCameraPreset('BLUE', 'FRONT')" class="btn-gemoy bg-slate-800 text-xs px-2.5 py-1 rounded-lg text-slate-200 border border-slate-600">Depan</button>
+                <div class="absolute top-2 left-2 flex gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700 backdrop-blur-md z-10">
+                    <button onclick="setCameraPreset('BLUE', 'ISO')" class="btn-gemoy bg-slate-800 text-[10px] md:text-xs px-2 py-0.5 rounded-lg text-slate-200 border border-slate-600">3D Iso</button>
+                    <button onclick="setCameraPreset('BLUE', 'TOP')" class="btn-gemoy bg-slate-800 text-[10px] md:text-xs px-2 py-0.5 rounded-lg text-slate-200 border border-slate-600">Atas</button>
+                    <button onclick="setCameraPreset('BLUE', 'FRONT')" class="btn-gemoy bg-slate-800 text-[10px] md:text-xs px-2 py-0.5 rounded-lg text-slate-200 border border-slate-600">Depan</button>
                 </div>
 
-                <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 px-3 py-1 rounded-xl border border-slate-700/80 backdrop-blur-md flex items-center justify-between text-xs text-slate-300">
-                    <span><i class="fas fa-arrows-rotate text-amber-400"></i> Geser kanvas untuk rotasi 3D</span>
+                <div class="absolute bottom-2 left-2 right-2 bg-slate-900/85 px-3 py-1 rounded-xl border border-slate-700/80 backdrop-blur-md flex items-center justify-between text-[11px] md:text-xs text-slate-300 z-10">
+                    <span class="hidden md:inline"><i class="fas fa-arrows-rotate text-amber-400"></i> Rotasi 3D</span>
                     <span id="blue-particle-summary" class="font-bold text-cyan-300">Inti: 0p, 0n | e-: K0, L0, M0, N0</span>
                 </div>
             </div>
 
             <!-- PANEL KONTROL PARTIKEL & DRAG -->
-            <div class="glass-panel rounded-xl p-2 flex flex-col gap-1.5">
-                <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="glass-panel rounded-xl p-2 flex flex-col gap-1.5 shrink-0">
+                <div class="grid grid-cols-3 gap-1.5 md:gap-2 text-center">
                     <!-- Proton -->
-                    <div class="bg-rose-950/60 p-1.5 rounded-xl border border-rose-500/40 flex flex-col items-center">
-                        <span class="text-xs font-bold text-rose-300">Proton (p⁺)</span>
-                        <div class="flex items-center gap-1 my-1">
-                            <button onclick="adjustParticle('BLUE', 'p', -1)" class="w-7 h-7 rounded-lg bg-rose-800 text-white font-bold text-sm hover:bg-rose-700">-</button>
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-600 to-amber-500 border-2 border-white flex items-center justify-center font-bold text-sm text-white shadow-md cursor-grab"
+                    <div class="bg-rose-950/60 p-1 md:p-1.5 rounded-xl border border-rose-500/40 flex flex-col items-center">
+                        <span class="text-[10px] md:text-xs font-bold text-rose-300">Proton (p⁺)</span>
+                        <div class="flex items-center gap-1 my-0.5 md:my-1">
+                            <button onclick="adjustParticle('BLUE', 'p', -1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-rose-800 text-white font-bold text-xs md:text-sm hover:bg-rose-700">-</button>
+                            <div class="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-rose-600 to-amber-500 border-2 border-white flex items-center justify-center font-bold text-xs md:text-sm text-white shadow-md cursor-grab"
                                  onpointerdown="startParticleDrag(event, 'BLUE', 'p')">
                                 <span id="count-blue-p">0</span>
                             </div>
-                            <button onclick="adjustParticle('BLUE', 'p', 1)" class="w-7 h-7 rounded-lg bg-rose-600 text-white font-bold text-sm hover:bg-rose-500">+</button>
+                            <button onclick="adjustParticle('BLUE', 'p', 1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-rose-600 text-white font-bold text-xs md:text-sm hover:bg-rose-500">+</button>
                         </div>
                     </div>
 
                     <!-- Neutron -->
-                    <div class="bg-slate-800/60 p-1.5 rounded-xl border border-slate-500/40 flex flex-col items-center">
-                        <span class="text-xs font-bold text-slate-300">Neutron (n⁰)</span>
-                        <div class="flex items-center gap-1 my-1">
-                            <button onclick="adjustParticle('BLUE', 'n', -1)" class="w-7 h-7 rounded-lg bg-slate-700 text-white font-bold text-sm hover:bg-slate-600">-</button>
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 border-2 border-white flex items-center justify-center font-bold text-sm text-slate-900 shadow-md cursor-grab"
+                    <div class="bg-slate-800/60 p-1 md:p-1.5 rounded-xl border border-slate-500/40 flex flex-col items-center">
+                        <span class="text-[10px] md:text-xs font-bold text-slate-300">Neutron (n⁰)</span>
+                        <div class="flex items-center gap-1 my-0.5 md:my-1">
+                            <button onclick="adjustParticle('BLUE', 'n', -1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-slate-700 text-white font-bold text-xs md:text-sm hover:bg-slate-600">-</button>
+                            <div class="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 border-2 border-white flex items-center justify-center font-bold text-xs md:text-sm text-slate-900 shadow-md cursor-grab"
                                  onpointerdown="startParticleDrag(event, 'BLUE', 'n')">
                                 <span id="count-blue-n">0</span>
                             </div>
-                            <button onclick="adjustParticle('BLUE', 'n', 1)" class="w-7 h-7 rounded-lg bg-slate-500 text-white font-bold text-sm hover:bg-slate-400">+</button>
+                            <button onclick="adjustParticle('BLUE', 'n', 1)" class="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-slate-500 text-white font-bold text-xs md:text-sm hover:bg-slate-400">+</button>
                         </div>
                     </div>
 
                     <!-- Electron Shell Selector -->
-                    <div class="bg-sky-950/60 p-1.5 rounded-xl border border-sky-500/40 flex flex-col items-center justify-center">
-                        <span class="text-xs font-bold text-cyan-300 mb-1">Tambah Elektron (e⁻)</span>
-                        <div class="flex items-center justify-center gap-1 flex-wrap">
-                            <button onclick="adjustShell('BLUE', 'K', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+K</button>
-                            <button onclick="adjustShell('BLUE', 'L', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+L</button>
-                            <button onclick="adjustShell('BLUE', 'M', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+M</button>
-                            <button onclick="adjustShell('BLUE', 'N', 1)" class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded-lg hover:bg-sky-500">+N</button>
+                    <div class="bg-sky-950/60 p-1 md:p-1.5 rounded-xl border border-sky-500/40 flex flex-col items-center justify-center">
+                        <span class="text-[10px] md:text-xs font-bold text-cyan-300 mb-0.5">Elektron (e⁻)</span>
+                        <div class="flex items-center justify-center gap-0.5 md:gap-1 flex-wrap">
+                            <button onclick="adjustShell('BLUE', 'K', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+K</button>
+                            <button onclick="adjustShell('BLUE', 'L', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+L</button>
+                            <button onclick="adjustShell('BLUE', 'M', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+M</button>
+                            <button onclick="adjustShell('BLUE', 'N', 1)" class="px-1.5 py-0.5 bg-sky-600 text-white text-[10px] md:text-xs font-bold rounded-lg hover:bg-sky-500">+N</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex gap-2">
-                    <button onclick="clearTeamAtom('BLUE')" class="btn-gemoy bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-500 px-3 py-1.5 rounded-xl text-xs flex-1">
+                    <button onclick="clearTeamAtom('BLUE')" class="btn-gemoy bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-500 px-2 md:px-3 py-1 rounded-xl text-xs flex-1">
                         <i class="fas fa-trash"></i> Reset
                     </button>
-                    <button onclick="verifyTeamModel('BLUE')" class="btn-gemoy bg-gradient-to-r from-sky-600 to-teal-400 hover:from-sky-500 text-white border-2 border-white px-4 py-1.5 rounded-xl text-sm font-bold flex-[2]">
+                    <button onclick="verifyTeamModel('BLUE')" class="btn-gemoy bg-gradient-to-r from-sky-600 to-teal-400 hover:from-sky-500 text-white border-2 border-white px-3 md:px-4 py-1 rounded-xl text-xs md:text-sm font-bold flex-[2]">
                         <i class="fas fa-check-circle"></i> UJI MODEL ATOM 🔵
                     </button>
                 </div>
