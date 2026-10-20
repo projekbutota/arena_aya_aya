@@ -156,7 +156,7 @@
         .dpad-red { background: linear-gradient(180deg, #ff4365, #c70039); }
         .dpad-blue { background: linear-gradient(180deg, #00b4d8, #0077b6); }
 
-        /* ARENA CANVAS (BERSIH TANPA GRID) */
+        /* ARENA CANVAS */
         .arena-center {
             width: 46%;
             height: 100%;
@@ -245,7 +245,7 @@
                 </div>
             </div>
 
-            <!-- SISI TENGAH: ARENA ULAR (CANVAS BERSIH) -->
+            <!-- SISI TENGAH: ARENA ULAR -->
             <div class="arena-center" id="arena-center">
                 <canvas id="snakeCanvas"></canvas>
             </div>
@@ -288,16 +288,18 @@
         const canvas = document.getElementById('snakeCanvas');
         const ctx = canvas.getContext('2d');
 
-        const GRID_SIZE = 18; // 18x18 Grid Luas
+        const GRID_SIZE = 18; // 18x18 Grid
         let CELL_SIZE = 20;
 
         let snakeRed = [];
         let dirRed = { x: 1, y: 0 };
         let scoreRed = 0;
+        let animPulseRed = 0; // Animasi efek kuis Merah
 
         let snakeBlue = [];
         let dirBlue = { x: -1, y: 0 };
         let scoreBlue = 0;
+        let animPulseBlue = 0; // Animasi efek kuis Biru
 
         // Daftar Makanan Bervariasi
         const FOOD_TYPES = ['🍎', '🍌', '🍓', '🍩', '🍬', '🍕', '🍔', '🍇', '🍉'];
@@ -410,6 +412,7 @@
                 { x: 3, y: 4 }, { x: 2, y: 4 }, { x: 1, y: 4 }
             ];
             dirRed = { x: 1, y: 0 };
+            animPulseRed = 0;
 
             snakeBlue = [
                 { x: GRID_SIZE - 4, y: GRID_SIZE - 5 },
@@ -417,6 +420,7 @@
                 { x: GRID_SIZE - 2, y: GRID_SIZE - 5 }
             ];
             dirBlue = { x: -1, y: 0 };
+            animPulseBlue = 0;
 
             foodList = [];
             spawnFood();
@@ -452,10 +456,17 @@
         function updateGame() {
             if (isGameOver) return;
 
-            const newRedHead = { x: snakeRed[0].x + dirRed.x, y: snakeRed[0].y + dirRed.y };
-            const newBlueHead = { x: snakeBlue[0].x + dirBlue.x, y: snakeBlue[0].y + dirBlue.y };
+            // REVISI 2: Dinding Tembus (Wall Wrap Around)
+            const newRedHead = { 
+                x: (snakeRed[0].x + dirRed.x + GRID_SIZE) % GRID_SIZE, 
+                y: (snakeRed[0].y + dirRed.y + GRID_SIZE) % GRID_SIZE 
+            };
+            const newBlueHead = { 
+                x: (snakeBlue[0].x + dirBlue.x + GRID_SIZE) % GRID_SIZE, 
+                y: (snakeBlue[0].y + dirBlue.y + GRID_SIZE) % GRID_SIZE 
+            };
 
-            // Check Collision
+            // Check Collision (Hanya Tabrakan Badan Sendiri / Lawan)
             if (checkCollision(newRedHead, snakeRed, snakeBlue)) {
                 playSound('crash');
                 triggerWin('BLUE', 'Ular Merah Menabrak!');
@@ -498,19 +509,24 @@
             });
             if (!ateBlue) snakeBlue.pop();
 
+            // Kurangi frame counter animasi pulse
+            if (animPulseRed > 0) animPulseRed--;
+            if (animPulseRed < 0) animPulseRed++;
+            if (animPulseBlue > 0) animPulseBlue--;
+            if (animPulseBlue < 0) animPulseBlue++;
+
             renderCanvas();
         }
 
         function checkCollision(head, mySnake, otherSnake) {
-            // Wall Collision
-            if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) return true;
+            // REVISI 2: Wall collision ditiadakan agar ular bisa bebas tembus dinding
 
-            // Self Collision
-            for (let i = 0; i < mySnake.length; i++) {
+            // Self Collision (Menabrak badan sendiri)
+            for (let i = 0; i < mySnake.length - 1; i++) {
                 if (head.x === mySnake[i].x && head.y === mySnake[i].y) return true;
             }
 
-            // Opponent Body Collision
+            // Opponent Body Collision (Menabrak badan lawan)
             for (let i = 0; i < otherSnake.length; i++) {
                 if (head.x === otherSnake[i].x && head.y === otherSnake[i].y) return true;
             }
@@ -521,7 +537,7 @@
         function renderCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Draw Variasi Makanan (Tanpa Kotak Grid)
+            // 1. Draw Variasi Makanan
             ctx.font = `${CELL_SIZE * 0.85}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -529,21 +545,43 @@
                 ctx.fillText(f.icon, f.x * CELL_SIZE + CELL_SIZE / 2, f.y * CELL_SIZE + CELL_SIZE / 2);
             });
 
-            // 2. Draw Ular Merah (Cute Cartoon Snake)
-            drawCuteSnake(snakeRed, dirRed, '#f43f5e', '#fb7185');
+            // 2. Draw Ular Merah
+            drawCuteSnake(snakeRed, dirRed, '#f43f5e', '#fb7185', animPulseRed);
 
-            // 3. Draw Ular Biru (Cute Cartoon Snake)
-            drawCuteSnake(snakeBlue, dirBlue, '#0284c7', '#38bdf8');
+            // 3. Draw Ular Biru
+            drawCuteSnake(snakeBlue, dirBlue, '#0284c7', '#38bdf8', animPulseBlue);
         }
 
-        function drawCuteSnake(snake, dir, headColor, bodyColor) {
+        // REVISI 3: Pertambahan Ukuran (Panjang & Besar) + Animasi Kuis
+        function drawCuteSnake(snake, dir, headColor, bodyColor, animPulse) {
+            // Ukuran dasar bertambah besar seiring panjang ular
+            let lengthScale = Math.min(7, (snake.length - 3) * 0.6); 
+            let pulseScale = 0;
+
+            if (animPulse > 0) {
+                // Animasi Membesar & Bersinar (+3 Segmen)
+                pulseScale = Math.sin(animPulse * 0.4) * 5;
+            } else if (animPulse < 0) {
+                // Animasi Mengecil (-2 Segmen)
+                pulseScale = -Math.sin(Math.abs(animPulse) * 0.4) * 3;
+            }
+
+            const baseRadius = Math.max(4, (CELL_SIZE / 2) - 1 + lengthScale + pulseScale);
+
+            // Efek Aura Glowing saat berhasil jawab kuis
+            if (animPulse > 0) {
+                ctx.save();
+                ctx.shadowColor = headColor;
+                ctx.shadowBlur = 18;
+            }
+
             snake.forEach((seg, idx) => {
                 const x = seg.x * CELL_SIZE + CELL_SIZE / 2;
                 const y = seg.y * CELL_SIZE + CELL_SIZE / 2;
-                const radius = (CELL_SIZE / 2) - 2;
+                const radius = Math.max(3, baseRadius - (idx * 0.15));
 
                 if (idx === 0) {
-                    // KEPALA ULAR CUTE (Dengan Mata & Pipi)
+                    // KEPALA ULAR CUTE
                     ctx.beginPath();
                     ctx.arc(x, y, radius + 2, 0, Math.PI * 2);
                     ctx.fillStyle = headColor;
@@ -576,7 +614,7 @@
                     ctx.arc(x + eyeOffsetX + 2, y + eyeOffsetY + 6, 3, 0, Math.PI * 2);
                     ctx.fill();
                 } else {
-                    // BADAN ULAR CANDY
+                    // BADAN ULAR
                     ctx.beginPath();
                     ctx.arc(x, y, radius, 0, Math.PI * 2);
                     ctx.fillStyle = bodyColor;
@@ -586,9 +624,13 @@
                     ctx.stroke();
                 }
             });
+
+            if (animPulse > 0) {
+                ctx.restore();
+            }
         }
 
-        // KUIS MEKANIK: BENAR = ULAR +3, MUSUH -2
+        // KUIS MEKANIK & ANIMASI EFEK REVISI 3
         function answerQuestion(team, selectedOpt) {
             if (isGameOver) return;
             let currentQ = (team === 'RED') ? daftarSoal[idxRedQ] : daftarSoal[idxBlueQ];
@@ -604,6 +646,10 @@
 
                     if (snakeBlue.length > 2) { snakeBlue.pop(); snakeBlue.pop(); }
 
+                    // Pemicu animasi visual
+                    animPulseRed = 14;   // Ular Merah membesar & bersinar
+                    animPulseBlue = -14; // Ular Biru mengecil
+
                     idxRedQ = (idxRedQ + 1) % daftarSoal.length;
                     renderQuiz('RED');
                 } else {
@@ -613,6 +659,10 @@
                     snakeBlue.push({ ...lastTail }, { ...lastTail }, { ...lastTail });
 
                     if (snakeRed.length > 2) { snakeRed.pop(); snakeRed.pop(); }
+
+                    // Pemicu animasi visual
+                    animPulseBlue = 14;  // Ular Biru membesar & bersinar
+                    animPulseRed = -14;  // Ular Merah mengecil
 
                     idxBlueQ = (idxBlueQ + 1) % daftarSoal.length;
                     renderQuiz('BLUE');
@@ -684,15 +734,15 @@
             renderQuiz('RED');
             renderQuiz('BLUE');
 
-            // Gerakan diperlambat ke 210ms per langkah
-            gameLoopInterval = setInterval(updateGame, 210);
+            // REVISI 1: Gerakan diperlambat ke 360ms per langkah agar lebih santai
+            gameLoopInterval = setInterval(updateGame, 360);
         }
 
         window.onload = () => {
             resizeCanvas();
             window.onresize = resizeCanvas;
 
-            // Kontrol Keyboard Opsional (WASD = Merah, Panah = Biru)
+            // Kontrol Keyboard (WASD = Merah, Panah = Biru)
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'w' || e.key === 'W') changeDir('RED', 'UP');
                 if (e.key === 's' || e.key === 'S') changeDir('RED', 'DOWN');
